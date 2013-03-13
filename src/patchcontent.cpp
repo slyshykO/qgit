@@ -230,11 +230,11 @@ void PatchContent::processData(const QByteArray& fileChunk, int* prevLineNum) {
 		*prevLineNum = -(*prevLineNum); // set once
 
 	const QStringList sl(newLines.split('\n', QString::KeepEmptyParts));
-	FOREACH_SL (it, sl) {
+    foreach (const QString& it, sl) {
 
 		// do not remove diff header because of centerTarget
-		bool n = (*it).startsWith('-') && !(*it).startsWith("---");
-		bool p = (*it).startsWith('+') && !(*it).startsWith("+++");
+        bool n = (it).startsWith('-') && !(it).startsWith("---");
+        bool p = (it).startsWith('+') && !(it).startsWith("+++");
 
 		if (!p)
 			notPosCnt++;
@@ -248,7 +248,7 @@ void PatchContent::processData(const QByteArray& fileChunk, int* prevLineNum) {
 
 		bool toRemove = (n && curFilter == VIEW_ADDED) || (p && curFilter == VIEW_REMOVED);
 		if (!toRemove)
-			filteredLines.append(*it).append('\n');
+            filteredLines.append(it).append('\n');
 
 		if (prevLineNum && *prevLineNum == notNegCnt && prevFilter == VIEW_ADDED)
 			*prevLineNum = -curLineNum; // set once

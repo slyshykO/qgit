@@ -254,10 +254,10 @@ void TreeView::updateTree() {
 
 	QTreeWidgetItemIterator item(this);
 	++item; // first item is repository name
-	FOREACH_SL (it, lst) {
+    foreach (const QString& it, lst) {
 		while (*item && treeIsValid) {
 
-			if ((*item)->text(0) == *it) {
+            if ((*item)->text(0) == it) {
 
 				// could be a different subdirectory with the
 				// same name that appears before in tree view

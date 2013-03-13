@@ -135,7 +135,7 @@ void Annotate::doAnnotate(const ShaString& ss) {
 
 	const Rev* r = git->revLookup(ss, fh); // historyRevs
 	if (r == NULL) {
-		dbp("ASSERT doAnnotate: no revision %1", sha);
+        dbp(QStringLiteral("ASSERT doAnnotate: no revision %1"), sha);
 		isError = true;
 		return;
 	}
@@ -629,8 +629,8 @@ const QString Annotate::getAncestor(SCRef sha, int* shaIdx) {
 		EM_REGISTER(exAnnCanceled);
 
 		QStringList fn(fh->fileNames());
-		FOREACH_SL (it, fn) {
-			fileSha = git->getFileSha(*it, sha); // calls qApp->processEvents()
+        foreach (const QString & it, fn) {
+            fileSha = git->getFileSha(it, sha); // calls qApp->processEvents()
 			if (!fileSha.isEmpty())
 				break;
 		}

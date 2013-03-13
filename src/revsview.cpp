@@ -316,12 +316,12 @@ void RevsView::updateLineEditSHA(bool clear) {
 void RevsView::on_lanesContextMenuRequested(SCList parents, SCList childs) {
 
 	QMenu contextMenu;
-	FOREACH_SL (it, childs)
-		contextMenu.addAction("Child: " + git->getShortLog(*it));
+    foreach (const QString& it, childs)
+        contextMenu.addAction("Child: " + git->getShortLog(it));
 
-	FOREACH_SL (it, parents) {
-		QString log(git->getShortLog(*it));
-		contextMenu.addAction("Parent: " + (log.isEmpty() ? *it : log));
+    foreach (const QString& it, parents) {
+        QString log(git->getShortLog(it));
+        contextMenu.addAction("Parent: " + (log.isEmpty() ? it : log));
 	}
 	QAction* act = contextMenu.exec(QCursor::pos()); // modal exec
 	if (!act)

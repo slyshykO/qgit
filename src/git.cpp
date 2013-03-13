@@ -83,6 +83,7 @@ void FileHistory::flushTail() {
 		return;
 	}
 	int cnt = revOrder.count() - earlyOutputCnt + 1;
+    beginResetModel();
 	while (cnt > 0) {
 		const ShaString& sha = revOrder.last();
 		const Rev* c = revs[sha];
@@ -99,7 +100,7 @@ void FileHistory::flushTail() {
 	firstFreeLane = earlyOutputCntBase;
 	lns->clear();
 	rowCnt = revOrder.count();
-	reset();
+    endResetModel();
 }
 
 void FileHistory::clear(bool complete) {
@@ -111,6 +112,7 @@ void FileHistory::clear(bool complete) {
 	}
 	git->cancelDataLoading(this);
 
+    beginResetModel();
 	qDeleteAll(revs);
 	revs.clear();
 	revOrder.clear();
@@ -131,7 +133,7 @@ void FileHistory::clear(bool complete) {
 	}
 	rowCnt = revOrder.count();
 	annIdValid = false;
-	reset();
+    endResetModel();
 	emit headerDataChanged(Qt::Horizontal, 0, 4);
 }
 
@@ -161,7 +163,9 @@ void FileHistory::on_loadCompleted(const FileHistory* fh, const QString&) {
 
 	// now we can process last revision
 	rowCnt = revOrder.count();
-	reset(); // force a reset to avoid artifacts in file history graph under Windows
+    // force a reset to avoid artifacts in file history graph under Windows
+    beginResetModel();
+    endResetModel();
 
 	// adjust Id column width according to the numbers of revisions we have
 	if (!git->isMainHistory(this))
@@ -208,7 +212,7 @@ QModelIndex FileHistory::index(int row, int column, const QModelIndex&) const {
 	if (row < 0 || row >= rowCnt)
 		return QModelIndex();
 
-	return createIndex(row, column, 0);
+    return createIndex(row, column, (void*)0);
 }
 
 QModelIndex FileHistory::parent(const QModelIndex&) const {
@@ -383,7 +387,7 @@ const QStringList Git::getGitConfigList(bool global) {
 bool Git::isImageFile(SCRef file) {
 
 	const QString ext(file.section('.', -1).toLower());
-	return QImageReader::supportedImageFormats().contains(ext.toAscii());
+    return QImageReader::supportedImageFormats().contains(ext.toLatin1());
 }
 
 bool Git::isBinaryFile(SCRef file) {
@@ -418,9 +422,9 @@ bool Git::isThrowOnStopRaised(int excpId, SCRef curContext) {
 
 void Git::setTextCodec(QTextCodec* tc) {
 
-	QTextCodec::setCodecForCStrings(tc); // works also with tc == 0 (Latin1)
-	QTextCodec::setCodecForLocale(tc);
-	QString name(tc ? tc->name() : "Latin1");
+    //QTextCodec::setCodecForCStrings(tc); // works also with tc == 0 (Latin1)
+    QTextCodec::setCodecForLocale(tc);
+    QString name(tc ? tc->name() : "Latin1");
 
 	// workaround Qt issue of mime name different from
 	// standard http://www.iana.org/assignments/character-sets
@@ -549,8 +553,8 @@ void Git::appendNamesWithId(QStringList& names, SCRef sha, SCList data, bool onl
 
 	if (onlyLoaded) { // prepare for later sorting
 		SCRef cap = QString("%1 ").arg(r->orderIdx, 6);
-		FOREACH_SL (it, data)
-			names.append(cap + *it);
+        foreach (const QString& it, data)
+            names.append(cap + it);
 	} else
 		names += data;
 }
@@ -977,8 +981,8 @@ void Git::on_getHighlightedFile_eof() {
 
 	QDir dir(workDir);
 	const QStringList sl(dir.entryList(QStringList() << "qgit_hlght_input*"));
-	FOREACH_SL (it, sl)
-		dir.remove(*it);
+    foreach (const QString& it, sl)
+        dir.remove(it);
 }
 
 bool Git::saveFile(SCRef fileSha, SCRef fileName, SCRef path) {
@@ -1000,10 +1004,10 @@ bool Git::getTree(SCRef treeSha, TreeInfo& ti, bool isWorkingDir, SCRef path) {
 		QStringList unknowns, dummy;
 		getWorkDirFiles(unknowns, dummy, RevFile::UNKNOWN);
 
-		FOREACH_SL (it, unknowns) {
+        foreach (const QString& it, unknowns) {
 
 			// don't add files under other directories
-			QFileInfo f(*it);
+            QFileInfo f(it);
 			SCRef d(f.dir().path());
 
 			if (d == path || (path.isEmpty() && d == ".")) {
@@ -1026,14 +1030,14 @@ bool Git::getTree(SCRef treeSha, TreeInfo& ti, bool isWorkingDir, SCRef path) {
 		return false;
 
 	const QStringList sl(runOutput.split('\n', QString::SkipEmptyParts));
-	FOREACH_SL (it, sl) {
+    foreach (const QString& it, sl) {
 
 		// append any not deleted file
-		SCRef fn((*it).section('\t', 1, 1));
+        SCRef fn((it).section('\t', 1, 1));
 		SCRef fp(path.isEmpty() ? fn : path + '/' + fn);
 
 		if (deleted.empty() || (deleted.indexOf(fp) == -1)) {
-			TreeEntry te(fn, (*it).mid(12, 40), (*it).mid(7, 4));
+            TreeEntry te(fn, (it).mid(12, 40), (it).mid(7, 4));
 			ti.append(te);
 		}
 	}
@@ -1208,7 +1212,8 @@ const QString Git::colorMatch(SCRef txt, QRegExp& regExp) {
 
 	QString text;
 
-	text = Qt::escape(txt);
+    //FIXME : 	text = Qt::escape(txt);
+    text = txt;
 
 	if (regExp.isEmpty())
 		return text;
@@ -1270,8 +1275,10 @@ const QString Git::getDesc(SCRef sha, QRegExp& shortLogRE, QRegExp& longLogRE,
 
 		if (showHeader) {
 		    if (c->committer() != c->author())
-		        ts << formatList(QStringList(Qt::escape(c->committer())), "Committer");
-			ts << formatList(QStringList(Qt::escape(c->author())), "Author");
+                // FIXME : ts << formatList(QStringList(Qt::escape(c->committer())), "Committer");
+                ts << formatList(QStringList(c->committer()), "Committer");
+            // FIXME : ts << formatList(QStringList(Qt::escape(c->author())), "Author");
+            ts << formatList(QStringList(c->author()), "Author");
 			ts << formatList(QStringList(getLocalDate(c->authorDate())), " Author date");
 
 			if (c->isUnApplied || c->isApplied) {
@@ -1316,7 +1323,7 @@ const QString Git::getDesc(SCRef sha, QRegExp& shortLogRE, QRegExp& longLogRE,
 			if (slog.length() > 60)
 				slog = slog.left(57).trimmed().append("...");
 
-			slog = Qt::escape(slog);
+            //FIXME: slog = Qt::escape(slog);
 			const QString link("<a href=\"" + r->sha() + "\">" + slog + "</a>");
 			text.replace(pos + 2, ref.length(), link);
 			pos += link.length();
@@ -1518,8 +1525,8 @@ bool Git::getPatchFilter(SCRef exp, bool isRegExp, ShaSet& shaSet) {
 		return false;
 
 	const QStringList sl(runOutput.split('\n', QString::SkipEmptyParts));
-	FOREACH_SL (it, sl)
-		shaSet.insert(*it);
+    foreach (const QString& it, sl)
+        shaSet.insert(it);
 
 	return true;
 }
@@ -1561,8 +1568,8 @@ bool Git::applyPatchFile(SCRef patchPath, bool fold, bool isDragDrop) {
 const QStringList Git::sortShaListByIndex(SCList shaList) {
 
 	QStringList orderedShaList;
-	FOREACH_SL (it, shaList)
-		appendNamesWithId(orderedShaList, *it, QStringList(*it), true);
+    foreach (const QString& it, shaList)
+        appendNamesWithId(orderedShaList, it, QStringList(it), true);
 
 	orderedShaList.sort();
 	QStringList::iterator itN(orderedShaList.begin());
@@ -1620,12 +1627,12 @@ bool Git::updateIndex(SCList selFiles) {
 	const RevFile* files = getFiles(ZERO_SHA); // files != NULL
 
 	QStringList toAdd, toRemove;
-	FOREACH_SL (it, selFiles) {
-		int idx = findFileIndex(*files, *it);
+    foreach (const QString& it, selFiles) {
+        int idx = findFileIndex(*files, it);
 		if (files->statusCmp(idx, RevFile::DELETED))
-			toRemove << *it;
+            toRemove << it;
 		else
-			toAdd << *it;
+            toAdd << it;
 	}
 	if (!toRemove.isEmpty() && !run("git rm --cached --ignore-unmatch -- " + quote(toRemove)))
 		return false;

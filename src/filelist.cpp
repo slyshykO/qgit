@@ -4,6 +4,7 @@
 	Copyright: See COPYING file that comes with this distribution
 */
 #include <QDrag>
+#include <QMimeData>
 #include <QApplication>
 #include <QMouseEvent>
 #include "git.h"

@@ -14,6 +14,7 @@
 #include <QLatin1String>
 #include <QVariant>
 #include <QVector>
+#include <QDebug>
 
 /*
    QVariant does not support size_t type used in Qt containers, this is
@@ -30,8 +31,12 @@ inline const QString  _valueOf(size_t x) { return QString::number((uint)x); }
 
 // some debug macros
 #define dbg(x)    qDebug(#x " is <%s>", _valueOf(x).toLatin1().constData())
-#define dbs(x)    qDebug(_valueOf(x).toLatin1().constData())
-#define dbp(s, x) qDebug(QString(s).arg(_valueOf(x)).toLatin1().constData())
+#define dbs(x)    qDebug()<<_valueOf(x).toLatin1().constData()
+
+#define dbp(s, x) qDebug()<<QString(s).arg(_valueOf(x)).toLatin1()
+//template <class T>
+//void dbp(const QString& s, const T x){qDebug()<<QString(s).arg(_valueOf(x)).toLatin1();}
+
 #define db1       qDebug("Mark Nr. 1")
 #define db2       qDebug("Mark Nr. 2")
 #define db3       qDebug("Mark Nr. 3")
@@ -43,7 +48,7 @@ inline const QString  _valueOf(size_t x) { return QString::number((uint)x); }
 #define FOREACH(type, i, c) for (type::const_iterator i((c).constBegin()),    \
                                  _e##i##_((c).constEnd()); i != _e##i##_; ++i)
 
-#define FOREACH_SL(i, c)    FOREACH(QStringList, i, c)
+//#define FOREACH_SL(i, c)    FOREACH(QStringList, i, c)
 
 class QDataStream;
 class QProcess;

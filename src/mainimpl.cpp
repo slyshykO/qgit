@@ -8,6 +8,7 @@
 */
 #include <QCloseEvent>
 #include <QDrag>
+#include <QMimeData>
 #include <QEvent>
 #include <QFileDialog>
 #include <QInputDialog>
@@ -947,60 +948,61 @@ void MainImpl::shortCutActivated() {
 
 	bool isKey_P = false;
 
-	switch (se->key()) {
+    //FIXME : sortcuts keys !!!
+//	switch (se->key()) {
 
-	case Qt::Key_I:
-		rv->tab()->listViewLog->on_keyUp();
-		break;
-	case Qt::Key_K:
-	case Qt::Key_N:
-		rv->tab()->listViewLog->on_keyDown();
-		break;
-	case Qt::SHIFT | Qt::Key_Up:
-		goMatch(-1);
-		break;
-	case Qt::SHIFT | Qt::Key_Down:
-		goMatch(1);
-		break;
-	case Qt::Key_Left:
-		ActBack_activated();
-		break;
-	case Qt::Key_Right:
-		ActForward_activated();
-		break;
-	case Qt::CTRL | Qt::Key_Plus:
-		adjustFontSize(1);
-		break;
-	case Qt::CTRL | Qt::Key_Minus:
-		adjustFontSize(-1);
-		break;
-	case Qt::Key_U:
-		scrollTextEdit(-18);
-		break;
-	case Qt::Key_D:
-		scrollTextEdit(18);
-		break;
-	case Qt::Key_Delete:
-	case Qt::Key_B:
-	case Qt::Key_Backspace:
-		scrollTextEdit(-1);
-		break;
-	case Qt::Key_Space:
-		scrollTextEdit(1);
-		break;
-	case Qt::Key_R:
-		tabWdg->setCurrentWidget(rv->tabPage());
-		break;
-	case Qt::Key_P:
-		isKey_P = true;
-	case Qt::Key_F: {
-		QWidget* cp = tabWdg->currentWidget();
-		Domain* d = isKey_P ? static_cast<Domain*>(firstTab<PatchView>(cp)) :
-		                      static_cast<Domain*>(firstTab<FileView>(cp));
-		if (d)
-			tabWdg->setCurrentWidget(d->tabPage()); }
-		break;
-	}
+//	case Qt::Key_I:
+//		rv->tab()->listViewLog->on_keyUp();
+//		break;
+//	case Qt::Key_K:
+//	case Qt::Key_N:
+//		rv->tab()->listViewLog->on_keyDown();
+//		break;
+//	case Qt::SHIFT | Qt::Key_Up:
+//		goMatch(-1);
+//		break;
+//	case Qt::SHIFT | Qt::Key_Down:
+//		goMatch(1);
+//		break;
+//	case Qt::Key_Left:
+//		ActBack_activated();
+//		break;
+//	case Qt::Key_Right:
+//		ActForward_activated();
+//		break;
+//	case Qt::CTRL | Qt::Key_Plus:
+//		adjustFontSize(1);
+//		break;
+//	case Qt::CTRL | Qt::Key_Minus:
+//		adjustFontSize(-1);
+//		break;
+//	case Qt::Key_U:
+//		scrollTextEdit(-18);
+//		break;
+//	case Qt::Key_D:
+//		scrollTextEdit(18);
+//		break;
+//	case Qt::Key_Delete:
+//	case Qt::Key_B:
+//	case Qt::Key_Backspace:
+//		scrollTextEdit(-1);
+//		break;
+//	case Qt::Key_Space:
+//		scrollTextEdit(1);
+//		break;
+//	case Qt::Key_R:
+//		tabWdg->setCurrentWidget(rv->tabPage());
+//		break;
+//	case Qt::Key_P:
+//		isKey_P = true;
+//	case Qt::Key_F: {
+//		QWidget* cp = tabWdg->currentWidget();
+//		Domain* d = isKey_P ? static_cast<Domain*>(firstTab<PatchView>(cp)) :
+//		                      static_cast<Domain*>(firstTab<FileView>(cp));
+//		if (d)
+//			tabWdg->setCurrentWidget(d->tabPage()); }
+//		break;
+//	}
 }
 
 void MainImpl::goMatch(int delta) {
@@ -1115,9 +1117,9 @@ void MainImpl::doUpdateRecentRepoMenu(SCRef newEntry) {
 
 	idx = 1;
 	QStringList newRecents;
-	FOREACH_SL (it, recents) {
-		File->addAction(QString::number(idx++) + " " + *it);
-		newRecents << *it;
+    foreach (const QString& it, recents) {
+        File->addAction(QString::number(idx++) + " " + it);
+        newRecents << it;
 		if (idx > MAX_RECENT_REPOS)
 			break;
 	}
@@ -1187,8 +1189,8 @@ void MainImpl::doContexPopup(SCRef sha) {
 		const QStringList& tn(git->getAllRefNames(Git::TAG, Git::optOnlyLoaded));
 		QAction* act = NULL;
 
-		FOREACH_SL (it, rbn) {
-			act = contextRmtMenu.addAction(*it);
+        foreach (const QString& it, rbn) {
+            act = contextRmtMenu.addAction(it);
 			act->setData("Ref");
 		}
 		if (!contextRmtMenu.isEmpty())
@@ -1210,12 +1212,12 @@ void MainImpl::doContexPopup(SCRef sha) {
 		if (!bn.empty())
 			contextMenu.addSeparator();
 
-		FOREACH_SL (it, bn) {
+        foreach (const QString& it, bn) {
 			if (   cntMenuEntries(contextMenu) < MAX_MENU_ENTRIES - tagEntries
-			    || (*it == bn.last() && contextBrnMenu.isEmpty()))
-				act = contextMenu.addAction(*it);
+                || (it == bn.last() && contextBrnMenu.isEmpty()))
+                act = contextMenu.addAction(it);
 			else
-				act = contextBrnMenu.addAction(*it);
+                act = contextBrnMenu.addAction(it);
 
 			act->setData("Ref");
 		}
@@ -1225,12 +1227,12 @@ void MainImpl::doContexPopup(SCRef sha) {
 		if (!tn.empty())
 			contextMenu.addSeparator();
 
-		FOREACH_SL (it, tn) {
+        foreach (const QString& it, tn) {
 			if (   cntMenuEntries(contextMenu) < MAX_MENU_ENTRIES
-			    || (*it == tn.last() && contextTagMenu.isEmpty()))
-				act = contextMenu.addAction(*it);
+                || (it == tn.last() && contextTagMenu.isEmpty()))
+                act = contextMenu.addAction(it);
 			else
-				act = contextTagMenu.addAction(*it);
+                act = contextTagMenu.addAction(it);
 
 			act->setData("Ref");
 		}
@@ -1536,8 +1538,8 @@ void MainImpl::doUpdateCustomActionMenu(const QStringList& list) {
 		return;
 
 	Actions->addSeparator();
-	FOREACH_SL (it, list)
-		Actions->addAction(*it);
+    foreach (const QString& it, list)
+        Actions->addAction(it);
 }
 
 void MainImpl::customAction_triggered(QAction* act) {

@@ -46,10 +46,10 @@ const QStringList Git::getArgs(bool* quit, bool repoChanged) {
 
 	QString args = "--all";
 	if (startup) {
-		for (int i = 1; i < qApp->argc(); i++) {
+        for (int i = 1; i < qApp->arguments().size(); i++) {
 			// in arguments with spaces double quotes
 			// are stripped by Qt, so re-add them
-			QString arg(qApp->argv()[i]);
+            QString arg(qApp->arguments()[i]);
 			if (arg.contains(' '))
 				arg.prepend('\"').append('\"');
 
@@ -142,10 +142,10 @@ bool Git::getRefs() {
 	QString prevRefSha;
 	QStringList patchNames, patchShas;
 	const QStringList rLst(runOutput.split('\n', QString::SkipEmptyParts));
-	FOREACH_SL (it, rLst) {
+    foreach (const QString& it, rLst) {
 
-		SCRef revSha = (*it).left(40);
-		SCRef refName = (*it).mid(41);
+        SCRef revSha = (it).left(40);
+        SCRef refName = (it).mid(41);
 
 		if (refName.startsWith("refs/patches/")) {
 
@@ -221,10 +221,10 @@ void Git::parseStGitPatches(SCList patchNames, SCList patchShas) {
 		return;
 
 	const QStringList pl(runOutput.split('\n', QString::SkipEmptyParts));
-	FOREACH_SL (it, pl) {
+    foreach (const QString& it, pl) {
 
-		SCRef status = (*it).left(1);
-		SCRef patchName = (*it).mid(2);
+        SCRef status = (it).left(1);
+        SCRef patchName = (it).mid(2);
 
 		bool applied = (status == "+" || status == ">");
 		int pos = patchNames.indexOf(patchName);
@@ -275,7 +275,7 @@ Rev* Git::fakeRevData(SCRef sha, SCList parents, SCRef author, SCRef date, SCRef
 	if (!patch.isEmpty())
 		data.append('\n' + patch);
 
-	QByteArray* ba = new QByteArray(data.toAscii());
+    QByteArray* ba = new QByteArray(data.toLatin1());
 	ba->append('\0');
 
 	fh->rowData.append(ba);
@@ -306,9 +306,9 @@ const RevFile* Git::fakeWorkDirRevFile(const WorkingDirInfo& wd) {
 	parseDiffFormat(*rf, wd.diffIndex, fl);
 	rf->onlyModified = false;
 
-	FOREACH_SL (it, wd.otherFiles) {
+    foreach (const QString& it, wd.otherFiles) {
 
-		appendFileName(*rf, *it, fl);
+        appendFileName(*rf, it, fl);
 		rf->status.append(RevFile::UNKNOWN);
 		rf->mergeParent.append(1);
 	}
@@ -631,8 +631,8 @@ bool Git::init(SCRef wd, bool askForRange, const QStringList* passedArgs, bool o
 		if (!passedArgs) {
 
 			// update text codec according to repo settings
-			bool dummy;
-			QTextCodec::setCodecForCStrings(getTextCodec(&dummy));
+            //bool dummy;
+            //QTextCodec::setCodecForCStrings(getTextCodec(&dummy));
 
 			// load references
 			SHOW_MSG(msg1 + "refs...");
@@ -802,13 +802,13 @@ bool Git::populateRenamedPatches(SCRef renamedSha, SCList newNames, FileHistory*
 
 	// find the first renamed file with the new file name in renamedFiles list
 	QString line;
-	FOREACH_SL (it, newNames) {
+    foreach (const QString& it, newNames) {
 		if (backTrack) {
-			line = runOutput.section('\t' + *it + '\t', 0, 0,
+            line = runOutput.section('\t' + it + '\t', 0, 0,
 			                         QString::SectionIncludeTrailingSep);
 			line.chop(1);
 		} else
-			line = runOutput.section('\t' + *it + '\n', 0, 0);
+            line = runOutput.section('\t' + it + '\n', 0, 0);
 
 		if (!line.isEmpty())
 			break;
@@ -1439,7 +1439,7 @@ const QString Rev::mid(int start, int len) const {
 
 	// warning no sanity check is done on arguments
 	const char* data = ba.constData();
-	return QString::fromAscii(data + start, len);
+    return QString::fromLatin1(data + start, len);
 }
 
 const QString Rev::midSha(int start, int len) const {

@@ -21,23 +21,25 @@ contains(QMAKE_CC,.*gcc.*) {
 	CONFIG += HAVE_GCC
 }
 
+QMAKE_CXXFLAGS += -std=c++0x
+
 # General stuff
 TEMPLATE = app
-CONFIG += qt warn_on exceptions debug_and_release static
+CONFIG += qt warn_on exceptions static
 INCLUDEPATH += ../src
 MAKEFILE = qmake
 RESOURCES += icons.qrc
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 # Platform dependent stuff
 win32 {
-    TARGET = qgit
     target.path = $$GIT_EXEC_DIR
     CONFIG += windows embed_manifest_exe
     RC_FILE = app_icon.rc
 }
 
 unix {
-    TARGET = qgit
     target.path = ~/bin
     CONFIG += x11
 }
@@ -65,9 +67,18 @@ INSTALLS += target
 DESTDIR = ../bin
 BUILD_DIR = ../build
 UI_DIR = $$BUILD_DIR
-MOC_DIR = $$BUILD_DIR
 RCC_DIR = $$BUILD_DIR
-OBJECTS_DIR = $$BUILD_DIR
+
+CONFIG(debug, debug|release) {
+TARGET      = qgitd
+OBJECTS_DIR = $$BUILD_DIR/debug
+MOC_DIR = $$BUILD_DIR/debug
+}
+else{
+TARGET      = qgit
+OBJECTS_DIR = $$BUILD_DIR/release
+MOC_DIR = $$BUILD_DIR/release
+}
 
 # project files
 FORMS += commit.ui console.ui customaction.ui fileview.ui help.ui \

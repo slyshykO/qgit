@@ -237,9 +237,9 @@ bool FileContent::startAnnotate(FileHistory* fh, SCRef ht) {
 uint FileContent::annotateLength(const FileAnnotation* annFile) {
 
 	int maxLen = 0;
-	FOREACH_SL (it, annFile->lines)
-		if ((*it).length() > maxLen)
-			maxLen = (*it).length();
+    foreach (const QString& it, annFile->lines)
+        if (it.length() > maxLen)
+            maxLen = it.length();
 
 	return maxLen;
 }

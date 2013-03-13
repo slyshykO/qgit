@@ -12,6 +12,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QShortcut>
+#include <QMimeData>
 #include "domain.h"
 #include "git.h"
 #include "listview.h"
@@ -86,9 +87,10 @@ void ListView::setupGeometry() {
 
 	QHeaderView* hv = header();
 	hv->setStretchLastSection(true);
-	hv->setResizeMode(LOG_COL, QHeaderView::Interactive);
-	hv->setResizeMode(TIME_COL, QHeaderView::Interactive);
-	hv->setResizeMode(ANN_ID_COL, QHeaderView::ResizeToContents);
+    //FIXMEE : resize mode for model
+    //hv->setResizeMode(LOG_COL, QHeaderView::Interactive);
+    //hv->setResizeMode(TIME_COL, QHeaderView::Interactive);
+    //hv->setResizeMode(ANN_ID_COL, QHeaderView::ResizeToContents);
 	hv->resizeSection(GRAPH_COL, DEF_GRAPH_COL_WIDTH);
 	hv->resizeSection(LOG_COL, DEF_LOG_COL_WIDTH);
 	hv->resizeSection(AUTH_COL, DEF_AUTH_COL_WIDTH);
@@ -751,9 +753,9 @@ void ListViewDelegate::addRefPixmap(QPixmap** pp, SCRef sha, int type, QStyleOpt
 
 	QString curBranch;
 	SCList refs = git->getRefName(sha, (Git::RefType)type, &curBranch);
-	FOREACH_SL (it, refs) {
+    foreach (const QString& it, refs) {
 
-		bool isCur = (curBranch == *it);
+        bool isCur = (curBranch == it);
 		opt.font.setBold(isCur);
 
 		QColor clr;
@@ -770,7 +772,7 @@ void ListViewDelegate::addRefPixmap(QPixmap** pp, SCRef sha, int type, QStyleOpt
 			clr = PURPLE;
 
 		opt.palette.setColor(QPalette::Window, clr);
-		addTextPixmap(pp, *it, opt);
+        addTextPixmap(pp, it, opt);
 	}
 }
 

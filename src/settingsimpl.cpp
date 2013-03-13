@@ -93,10 +93,10 @@ void SettingsImpl::userInfo() {
 	}
 	bool found = false;
 	int idx = 0;
-	FOREACH_SL(it, _uInfo) {
-		comboBoxUserSrc->addItem(*it);
+    FOREACH (QStringList, it, _uInfo) {
+        comboBoxUserSrc->addItem(*it);
 		++it;
-		if (!found && !(*it).isEmpty())
+        if (!found && !(*it).isEmpty())
 			found = true;
 		if (!found)
 			idx++;
@@ -132,7 +132,7 @@ void SettingsImpl::readGitConfig(const QString& source) {
     QStringList options(git->getGitConfigList(source == "Global"));    
     options.sort();
 
-    FOREACH_SL(it, options) {
+    FOREACH (QStringList, it, options) {
 
         QStringList paths = it->split("=").at(0).split(".");
         QString value = it->split("=").at(1);
