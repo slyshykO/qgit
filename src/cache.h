@@ -9,8 +9,9 @@
 
 #include "git.h"
 
-class Cache : public QObject {
-Q_OBJECT
+class Cache : public QObject
+{
+    Q_OBJECT
 public:
 	explicit Cache(QObject* par) : QObject(par) {}
 	static bool save(const QString& gitDir, const RevFileMap& rf,

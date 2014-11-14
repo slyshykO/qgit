@@ -13,8 +13,9 @@ class Domain;
 class StateInfo;
 class Git;
 
-class FileList: public QListWidget {
-Q_OBJECT
+class FileList: public QListWidget
+{
+    Q_OBJECT
 public:
 	FileList(QWidget* parent);
 	void setup(Domain* dm, Git* g);

@@ -16,8 +16,9 @@
 class MyProcess;
 class Git;
 
-class ConsoleImpl : public QMainWindow, Ui_Console { // we need a statusbar
-Q_OBJECT
+class ConsoleImpl : public QMainWindow, Ui_Console
+{ // we need a statusbar
+    Q_OBJECT
 public:
 	ConsoleImpl(const QString& nm, Git* g);
 	bool start(const QString& cmd,const QString& args);

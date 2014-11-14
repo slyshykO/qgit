@@ -19,7 +19,8 @@ class Git;
 class StateInfo;
 class Domain;
 
-class FileItem : public QTreeWidgetItem {
+class FileItem : public QTreeWidgetItem
+{
 public:
 	FileItem(FileItem* p, SCRef nm) : QTreeWidgetItem(p, QStringList(nm)) {}
 	FileItem(QTreeWidget* p, SCRef nm) : QTreeWidgetItem(p, QStringList(nm)) {}
@@ -28,7 +29,8 @@ public:
 	void setBold(bool b);
 };
 
-class DirItem : public FileItem {
+class DirItem : public FileItem
+{
 public:
 	DirItem(QTreeWidget* parent, SCRef ts, SCRef nm);
 	DirItem(DirItem* parent, SCRef ts, SCRef nm);
@@ -39,8 +41,9 @@ protected:
 	QString treeSha;
 };
 
-class TreeView : public QTreeWidget {
-Q_OBJECT
+class TreeView : public QTreeWidget
+{
+    Q_OBJECT
 public:
 	TreeView(QWidget* par) : QTreeWidget(par), d(NULL), git(NULL), treeIsValid(false) {}
 	void setup(Domain* d, Git* g);

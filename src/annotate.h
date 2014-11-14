@@ -16,7 +16,8 @@ class Git;
 class FileHistory;
 class MyProcess;
 
-class ReachInfo {
+class ReachInfo
+{
 public:
 	ReachInfo() {}
 	ReachInfo(SCRef s, int i, int t) : sha(s), id(i), type(t) {}
@@ -26,7 +27,8 @@ public:
 };
 typedef QVector<ReachInfo> ReachList;
 
-class RangeInfo {
+class RangeInfo
+{
 public:
 	RangeInfo() { clear(); }
 	RangeInfo(int s, int e, bool m) : start(s), end(e), modified(m) {}
@@ -36,8 +38,9 @@ public:
 };
 typedef QHash<QString, RangeInfo> Ranges;
 
-class Annotate : public QObject {
-Q_OBJECT
+class Annotate : public QObject
+{
+    Q_OBJECT
 public:
 	Annotate(Git* parent, QObject* guiObj);
 	void deleteWhenDone();

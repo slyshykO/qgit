@@ -23,8 +23,9 @@ class FileHistory;
 class QListWidget;
 class QListWidgetItem;
 
-class FileContent: public QTextEdit {
-Q_OBJECT
+class FileContent: public QTextEdit
+{
+    Q_OBJECT
 public:
 	FileContent(QWidget* parent);
 	~FileContent();

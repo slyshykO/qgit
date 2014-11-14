@@ -20,8 +20,9 @@ class UnbufferedTemporaryFile;
 // a temporary file (default). Uncomment following line to use QProcess
 // #define USE_QPROCESS
 
-class DataLoader : public QProcess {
-Q_OBJECT
+class DataLoader : public QProcess
+{
+    Q_OBJECT
 public:
 	DataLoader(Git* g, FileHistory* f);
 	~DataLoader();

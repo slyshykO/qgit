@@ -12,8 +12,9 @@
 class QVariant;
 class Git;
 
-class SettingsImpl: public QDialog, public Ui_settingsBase {
-Q_OBJECT
+class SettingsImpl: public QDialog, public Ui_settingsBase
+{
+    Q_OBJECT
 public:
     SettingsImpl(QWidget* parent, Git* git, int defTab = 0);
 

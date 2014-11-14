@@ -12,8 +12,9 @@
 
 class Git;
 
-class CommitImpl : public QWidget, public Ui_CommitBase {
-Q_OBJECT
+class CommitImpl : public QWidget, public Ui_CommitBase
+{
+    Q_OBJECT
 public:
 	explicit CommitImpl(Git* g, bool amend);
 

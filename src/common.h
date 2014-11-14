@@ -342,8 +342,8 @@ private:
 public:
     bool isDiffCache, isApplied, isUnApplied; // put here to optimize padding
 };
-typedef QHash<ShaString, const Rev*> RevMap;  // faster then a map
 
+typedef QHash<ShaString, const Rev*> RevMap;  // faster then a map
 
 class RevFile
 {
@@ -396,20 +396,24 @@ public:
     QVector<int> mergeParent;
 
     // helper functions
-    int count() const {
-
+    int count() const
+    {
         return pathsIdx.size() / ((int)sizeof(int) * 2);
     }
-    bool statusCmp(int idx, StatusFlag sf) const {
+
+    bool statusCmp(int idx, StatusFlag sf) const
+    {
 
         return ((onlyModified ? MODIFIED : status.at(idx)) & sf);
     }
-    const QString extendedStatus(int idx) const {
-    /*
-       rf.extStatus has size equal to position of latest copied/renamed file,
-       that could be lower then count(), so we have to explicitly check for
-       an out of bound condition.
-    */
+
+    const QString extendedStatus(int idx) const
+    {
+        /*
+           rf.extStatus has size equal to position of latest copied/renamed file,
+           that could be lower then count(), so we have to explicitly check for
+           an out of bound condition.
+        */
         return (!extStatus.isEmpty() && idx < extStatus.count() ? extStatus.at(idx) : "");
     }
     const RevFile& operator>>(QDataStream&) const;
@@ -418,7 +422,8 @@ public:
 typedef QHash<ShaString, const RevFile*> RevFileMap;
 
 
-class FileAnnotation {
+class FileAnnotation
+{
 public:
 	explicit FileAnnotation(int id) : isValid(false), annId(id) {}
 	FileAnnotation() : isValid(false) {}
@@ -430,7 +435,8 @@ public:
 typedef QHash<ShaString, FileAnnotation> AnnotateHistory;
 
 
-class BaseEvent: public QEvent {
+class BaseEvent: public QEvent
+{
 public:
 	BaseEvent(SCRef d, int id) : QEvent((QEvent::Type)id), payLoad(d) {}
 	const QString myData() const { return payLoad; }
@@ -444,12 +450,14 @@ private:
 DEF_EVENT(MessageEvent, QGit::MSG_EV);
 DEF_EVENT(AnnotateProgressEvent, QGit::ANN_PRG_EV);
 
-class DeferredPopupEvent : public BaseEvent {
+class DeferredPopupEvent : public BaseEvent
+{
 public:
 	DeferredPopupEvent(SCRef msg, int type) : BaseEvent(msg, type) {}
 };
 
-class MainExecErrorEvent : public BaseEvent {
+class MainExecErrorEvent : public BaseEvent
+{
 public:
 	MainExecErrorEvent(SCRef c, SCRef e) : BaseEvent("", QGit::ERROR_EV), cmd(c), err(e) {}
 	const QString command() const { return cmd; }

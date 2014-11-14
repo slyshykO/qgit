@@ -11,8 +11,9 @@
 
 class Git;
 
-class RangeSelectImpl: public QDialog, public Ui_RangeSelectBase {
-Q_OBJECT
+class RangeSelectImpl: public QDialog, public Ui_RangeSelectBase
+{
+    Q_OBJECT
 public:
 	RangeSelectImpl(QWidget* par, QString* range, bool rc, Git* g);
 

@@ -10,8 +10,9 @@
 
 class Domain;
 
-class RevDesc: public QTextBrowser {
-Q_OBJECT
+class RevDesc: public QTextBrowser
+{
+    Q_OBJECT
 public:
 	RevDesc(QWidget* parent);
 	void setup(Domain* dm) { d = dm; }

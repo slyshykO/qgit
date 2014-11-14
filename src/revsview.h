@@ -17,8 +17,9 @@ class Git;
 class FileHistory;
 class PatchView;
 
-class RevsView : public Domain {
-Q_OBJECT
+class RevsView : public Domain
+{
+    Q_OBJECT
 public:
 	RevsView(MainImpl* parent, Git* git, bool isMain = false);
 	~RevsView();

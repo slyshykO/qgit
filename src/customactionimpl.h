@@ -11,8 +11,9 @@
 
 #include "ui_customaction.h"
 
-class CustomActionImpl : public QWidget, public Ui_CustomActionBase {
-Q_OBJECT
+class CustomActionImpl : public QWidget, public Ui_CustomActionBase
+{
+    Q_OBJECT
 public:
 	CustomActionImpl();
 

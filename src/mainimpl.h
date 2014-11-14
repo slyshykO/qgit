@@ -30,7 +30,8 @@ class FileHistory;
 class FileView;
 class RevsView;
 
-class MainImpl : public QMainWindow, public Ui_MainBase {
+class MainImpl : public QMainWindow, public Ui_MainBase
+{
     Q_OBJECT
 public:
     MainImpl(const QString& curDir = "", QWidget* parent = 0);
@@ -54,59 +55,39 @@ public:
     QComboBox* cmbSearch;
 
 signals:
-    void highlightPatch(const QString&, bool
-                        );
+    void highlightPatch(const QString&, bool);
     void updateRevDesc();
     void closeAllWindows();
     void closeAllTabs();
-    void changeFont(const QFont&
-                    );
-    void closeTabButtonEnabled(bool
-                               );
+    void changeFont(const QFont&);
+    void closeTabButtonEnabled(bool);
     void typeWriterFontChanged();
     void flagChanged(uint);
 
 private slots:
-    void tabWdg_currentChanged(int
-                               );
-    void newRevsAdded(const FileHistory*, const QVector<ShaString>&
-                      );
-    void fileNamesLoad(int, int
-                       );
-    void revisionsDragged(const QStringList&
-                          );
-    void revisionsDropped(const QStringList&
-                          );
+    void tabWdg_currentChanged(int);
+    void newRevsAdded(const FileHistory*, const QVector<ShaString>&);
+    void fileNamesLoad(int, int);
+    void revisionsDragged(const QStringList&);
+    void revisionsDropped(const QStringList&);
     void shortCutActivated();
 
 protected:
-    virtual bool event(QEvent* e
-                       );
+    virtual bool event(QEvent* e);
 
 protected slots:
     void initWithEventLoopActive();
-    void refreshRepo(bool setCurRevAfterLoad = true
-                     );
-    void listViewLog_doubleClicked(const QModelIndex&
-                                   );
-    void fileList_itemDoubleClicked(QListWidgetItem*
-                                    );
-    void treeView_doubleClicked(QTreeWidgetItem*, int
-                                );
-    void histListView_doubleClicked(const QModelIndex&
-                                    );
-    void customActionListChanged(const QStringList& list
-                                 );
-    void openRecent_triggered(QAction*
-                              );
-    void customAction_triggered(QAction*
-                                );
-    void customAction_exited(const QString& name
-                             );
-    void goRef_triggered(QAction*
-                         );
-    void changesCommitted(bool
-                          );
+    void refreshRepo(bool setCurRevAfterLoad = true);
+    void listViewLog_doubleClicked(const QModelIndex&);
+    void fileList_itemDoubleClicked(QListWidgetItem*);
+    void treeView_doubleClicked(QTreeWidgetItem*, int);
+    void histListView_doubleClicked(const QModelIndex&);
+    void customActionListChanged(const QStringList& list);
+    void openRecent_triggered(QAction*);
+    void customAction_triggered(QAction*);
+    void customAction_exited(const QString& name);
+    void goRef_triggered(QAction*);
+    void changesCommitted(bool);
     void lineEditSHA_returnPressed();
     void lineEditFilter_returnPressed();
     void pushButtonCloseTab_clicked();
@@ -140,76 +121,46 @@ protected slots:
     void ActPop_activated();
     void ActClose_activated();
     void ActExit_activated();
-    void ActSearchAndFilter_toggled(bool
-                                    );
-    void ActSearchAndHighlight_toggled(bool
-                                       );
+    void ActSearchAndFilter_toggled(bool);
+    void ActSearchAndHighlight_toggled(bool);
     void ActCustomActionSetup_activated();
-    void ActCheckWorkDir_toggled(bool
-                                 );
-    void ActShowTree_toggled(bool
-                             );
-    void ActFilterTree_toggled(bool
-                               );
+    void ActCheckWorkDir_toggled(bool);
+    void ActShowTree_toggled(bool);
+    void ActFilterTree_toggled(bool);
     void ActAbout_activated();
     void ActHelp_activated();
-    void closeEvent(QCloseEvent* ce
-                    );
+    void closeEvent(QCloseEvent* ce);
 
 private:
     friend class setRepoDelayed;
 
-    virtual bool eventFilter(QObject* obj, QEvent* ev
-                             );
-    void updateGlobalActions(bool b
-                             );
+    virtual bool eventFilter(QObject* obj, QEvent* ev);
+    void updateGlobalActions(bool b);
     void setupShortcuts();
-    int currentTabType(Domain** t
-                       );
-    void filterList(bool isOn, bool onlyHighlight
-                    );
-    bool isMatch(SCRef sha, SCRef f, int cn, const QMap<QString,bool>& sm
-                 );
-    void highlightAbbrevSha(SCRef abbrevSha
-                            );
-    void setRepository(SCRef wd, bool = false, bool = false, const QStringList* = NULL, bool = false
-                       );
-    void getExternalDiffArgs(QStringList* args, QStringList* filenames
-                             );
-    void lineEditSHASetText(SCRef text
-                            );
-    void updateCommitMenu(bool isStGITStack
-                          );
-    void updateRecentRepoMenu(SCRef newEntry = ""
-                              );
-    void doUpdateRecentRepoMenu(SCRef newEntry
-                                );
-    void doUpdateCustomActionMenu(const QStringList& list
-                                  );
-    void doBranchOrTag(bool isTag
-                       );
-    void ActCommit_setEnabled(bool b
-                              );
-    void doContexPopup(SCRef sha
-                       );
-    void doFileContexPopup(SCRef fileName, int type
-                           );
-    void adjustFontSize(int delta
-                        );
-    void scrollTextEdit(int delta
-                        );
-    void goMatch(int delta
-                 );
-    bool askApplyPatchParameters(bool* commit, bool* fold
-                                 );
+    int currentTabType(Domain** t);
+    void filterList(bool isOn, bool onlyHighlight);
+    bool isMatch(SCRef sha, SCRef f, int cn, const QMap<QString,bool>& sm);
+    void highlightAbbrevSha(SCRef abbrevSha);
+    void setRepository(SCRef wd, bool = false, bool = false, const QStringList* = NULL, bool = false);
+    void getExternalDiffArgs(QStringList* args, QStringList* filenames);
+    void lineEditSHASetText(SCRef text);
+    void updateCommitMenu(bool isStGITStack);
+    void updateRecentRepoMenu(SCRef newEntry = "");
+    void doUpdateRecentRepoMenu(SCRef newEntry);
+    void doUpdateCustomActionMenu(const QStringList& list);
+    void doBranchOrTag(bool isTag);
+    void ActCommit_setEnabled(bool b);
+    void doContexPopup(SCRef sha);
+    void doFileContexPopup(SCRef fileName, int type);
+    void adjustFontSize(int delta);
+    void scrollTextEdit(int delta);
+    void goMatch(int delta);
+    bool askApplyPatchParameters(bool* commit, bool* fold);
     void saveCurrentGeometry();
     QTextEdit* getCurrentTextEdit();
-    template<class X> QList<X*>* getTabs(QWidget* tabPage = NULL
-                                         );
-    template<class X> X* firstTab(QWidget* startPage = NULL
-                                  );
-    void openFileTab(FileView* fv = NULL
-                     );
+    template<class X> QList<X*>* getTabs(QWidget* tabPage = NULL);
+    template<class X> X* firstTab(QWidget* startPage = NULL);
+    void openFileTab(FileView* fv = NULL);
 
     EM_DECLARE(exExiting);
 
@@ -229,21 +180,19 @@ private:
     bool setRepositoryBusy;
 };
 
-class ExternalDiffProc : public QProcess {
+class ExternalDiffProc : public QProcess
+{
     Q_OBJECT
 public:
-    ExternalDiffProc(const QStringList& f, QObject* p
-                     )
+    ExternalDiffProc(const QStringList& f, QObject* p)
         : QProcess(p), filenames(f)
     {
-
         connect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
                 this, SLOT(on_finished(int, QProcess::ExitStatus)));
     }
 
     ~ExternalDiffProc()
     {
-
         terminate();
         removeFiles();
     }
@@ -259,7 +208,6 @@ private slots:
 private:
     void removeFiles()
     {
-
         if (!filenames.empty())
             {
                 QDir d; // remove temporary files to diff on
