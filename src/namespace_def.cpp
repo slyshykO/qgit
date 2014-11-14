@@ -116,7 +116,6 @@ uint qHash(const ShaString& s)   // fast path, called 6-7 times per revision
  */
 const ShaString QGit::toTempSha(const QString& sha)
 {
-
     static QByteArray ba;
     ba = sha.toLatin1();
     return ShaString(sha.isEmpty() ? NULL : ba.constData());
@@ -124,7 +123,6 @@ const ShaString QGit::toTempSha(const QString& sha)
 
 const ShaString QGit::toPersistentSha(const QString& sha, QVector<QByteArray>& v)
 {
-
     v.append(sha.toLatin1());
     return ShaString(v.last().constData());
 }
@@ -213,20 +211,17 @@ using namespace QGit;
 // settings helpers
 uint QGit::flags(SCRef flagsVariable)
 {
-
     QSettings settings;
     return settings.value(flagsVariable, FLAGS_DEF).toUInt();
 }
 
 bool QGit::testFlag(uint f, SCRef flagsVariable)
 {
-
     return (flags(flagsVariable) & f);
 }
 
 void QGit::setFlag(uint f, bool b, SCRef flagsVariable)
 {
-
     QSettings settings;
     uint flags = settings.value(flagsVariable, FLAGS_DEF).toUInt();
     flags = b ? flags | f : flags & ~f;
@@ -238,7 +233,6 @@ static QHash<QString, const QPixmap*> mimePixMap;
 
 void QGit::initMimePix()
 {
-
     if (!mimePixMap.empty()) // only once
         return;
 
@@ -314,13 +308,11 @@ void QGit::initMimePix()
 
 void QGit::freeMimePix()
 {
-
     qDeleteAll(mimePixMap);
 }
 
 const QPixmap* QGit::mimePix(SCRef fileName)
 {
-
     SCRef ext = fileName.section('.', -1, -1).toLower();
     if (mimePixMap.contains(ext))
         return mimePixMap.value(ext);
@@ -351,7 +343,6 @@ void QGit::saveGeometrySetting(SCRef name, QWidget* w, splitVect* svPtr)
 
 void QGit::restoreGeometrySetting(SCRef name, QWidget* w, splitVect* svPtr)
 {
-
     QSettings settings;
     QString nm;
     if (w)
@@ -380,7 +371,6 @@ void QGit::restoreGeometrySetting(SCRef name, QWidget* w, splitVect* svPtr)
 // misc helpers
 bool QGit::stripPartialParaghraps(const QByteArray& ba, QString* dst, QString* prev)
 {
-
     if (ba.endsWith('\n'))   // optimize common case
         {
             *dst = ba;
@@ -416,7 +406,6 @@ bool QGit::stripPartialParaghraps(const QByteArray& ba, QString* dst, QString* p
 
 bool QGit::writeToFile(SCRef fileName, SCRef data, bool setExecutable)
 {
-
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
         {
@@ -443,7 +432,6 @@ bool QGit::writeToFile(SCRef fileName, SCRef data, bool setExecutable)
 
 bool QGit::writeToFile(SCRef fileName, const QByteArray& data, bool setExecutable)
 {
-
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
         {
@@ -465,7 +453,6 @@ bool QGit::writeToFile(SCRef fileName, const QByteArray& data, bool setExecutabl
 
 bool QGit::readFromFile(SCRef fileName, QString& data)
 {
-
     data = "";
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly))
@@ -481,7 +468,6 @@ bool QGit::readFromFile(SCRef fileName, QString& data)
 
 bool QGit::startProcess(QProcess* proc, SCList args, SCRef buf, bool* winShell)
 {
-
     if (!proc || args.isEmpty())
         return false;
 
