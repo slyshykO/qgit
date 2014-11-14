@@ -11,8 +11,7 @@
 #include "domain.h"
 #include "filelist.h"
 
-FileList::FileList(QWidget* p
-                   ) : QListWidget(p), d(NULL), git(NULL), st(NULL)
+FileList::FileList(QWidget* p) : QListWidget(p), d(NULL), git(NULL), st(NULL)
 {
 }
 
