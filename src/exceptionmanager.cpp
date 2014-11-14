@@ -14,27 +14,23 @@
 
 ExceptionManager::ExceptionManager()
 {
-
     excpId = regionId = currentRegionId = 1;
     descriptions.append("we start from 1");
 }
 
 void ExceptionManager::init(int* excp, const QString& desc)
 {
-
     *excp = excpId++;
     descriptions.append(desc);
 }
 
 const QString ExceptionManager::desc(int excpId)
 {
-
     return descriptions[excpId];
 }
 
 bool ExceptionManager::isMatch(int value, int excp, const QString& context)
 {
-
     bool match = (value == excp);
     if (match)
         {
@@ -90,7 +86,6 @@ void ExceptionManager::remove(int excpId)
 ExceptionManager::SetIt ExceptionManager::findExcp(ThrowableSet& ts,
                                                    const SetIt& startIt, int excpId)
 {
-
     SetIt it(startIt);
     for (; it != ts.end(); ++it)
         if ((*it).excpId == excpId)
@@ -100,7 +95,6 @@ ExceptionManager::SetIt ExceptionManager::findExcp(ThrowableSet& ts,
 
 void ExceptionManager::setRaisedFlag(ThrowableSet& ts, int excpId)
 {
-
     SetIt it(findExcp(ts, ts.begin(), excpId));
     while (it != ts.end())
         {
@@ -111,7 +105,6 @@ void ExceptionManager::setRaisedFlag(ThrowableSet& ts, int excpId)
 
 void ExceptionManager::raise(int excpId)
 {
-
     if (totalThrowableSet.isEmpty())
         return;
 
@@ -152,7 +145,6 @@ int ExceptionManager::saveThrowableSet()
 
 void ExceptionManager::restoreThrowableSet(int regionId)
 {
-
     if (!throwableSetMap.contains(regionId))
         {
             qDebug("ASSERT in restoreThrowableSet: region %i not found", regionId);
@@ -164,7 +156,6 @@ void ExceptionManager::restoreThrowableSet(int regionId)
 
 bool ExceptionManager::isPending(int excpId)
 {
-
     // check in ALL regions if an exception request is pending
     QMap<int, ThrowableSet>::const_iterator itList(throwableSetMap.constBegin());
     while (itList != throwableSetMap.constEnd())
@@ -181,7 +172,6 @@ bool ExceptionManager::isPending(int excpId)
 
 void ExceptionManager::throwPending()
 {
-
     if (regionThrowableSet.isEmpty())
         return;
 
