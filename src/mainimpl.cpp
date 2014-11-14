@@ -44,33 +44,33 @@
 
 using namespace QGit;
 
-MainImpl::MainImpl(SCRef cd, QWidget* p) : QMainWindow(p) {
+MainImpl::MainImpl(SCRef cd, QWidget* p) : QMainWindow(p)
+{
+    EM_INIT(exExiting, "Exiting");
 
-	EM_INIT(exExiting, "Exiting");
+    setAttribute(Qt::WA_DeleteOnClose);
+    setupUi(this);
 
-	setAttribute(Qt::WA_DeleteOnClose);
-	setupUi(this);
+    // manual setup widgets not buildable with Qt designer
+    lineEditSHA = new QLineEdit(NULL);
+    lineEditFilter = new QLineEdit(NULL);
+    cmbSearch = new QComboBox(NULL);
+    QString list("Short log,Log msg,Author,SHA1,File,Patch,Patch (regExp)");
+    cmbSearch->addItems(list.split(","));
+    toolBar->addWidget(lineEditSHA);
+    QAction* act = toolBar->insertWidget(ActSearchAndFilter, lineEditFilter);
+    toolBar->insertWidget(act, cmbSearch);
+    connect(lineEditSHA, SIGNAL(returnPressed()), this, SLOT(lineEditSHA_returnPressed()));
+    connect(lineEditFilter, SIGNAL(returnPressed()), this, SLOT(lineEditFilter_returnPressed()));
 
-	// manual setup widgets not buildable with Qt designer
-	lineEditSHA = new QLineEdit(NULL);
-	lineEditFilter = new QLineEdit(NULL);
-	cmbSearch = new QComboBox(NULL);
-	QString list("Short log,Log msg,Author,SHA1,File,Patch,Patch (regExp)");
-	cmbSearch->addItems(list.split(","));
-	toolBar->addWidget(lineEditSHA);
-	QAction* act = toolBar->insertWidget(ActSearchAndFilter, lineEditFilter);
-	toolBar->insertWidget(act, cmbSearch);
-	connect(lineEditSHA, SIGNAL(returnPressed()), this, SLOT(lineEditSHA_returnPressed()));
-	connect(lineEditFilter, SIGNAL(returnPressed()), this, SLOT(lineEditFilter_returnPressed()));
+    // create light and dark colors for alternate background
+    ODD_LINE_COL = palette().color(QPalette::Base);
+    EVEN_LINE_COL = ODD_LINE_COL.dark(103);
 
-	// create light and dark colors for alternate background
-	ODD_LINE_COL = palette().color(QPalette::Base);
-	EVEN_LINE_COL = ODD_LINE_COL.dark(103);
-
-	// our interface to git world
-	git = new Git(this);
-	setupShortcuts();
-	qApp->installEventFilter(this);
+    // our interface to git world
+    git = new Git(this);
+    setupShortcuts();
+    qApp->installEventFilter(this);
 
 	// init native types
 	setRepositoryBusy = false;
@@ -90,13 +90,14 @@ MainImpl::MainImpl(SCRef cd, QWidget* p) : QMainWindow(p) {
 
 	// set-up typewriter (fixed width) font
 	font = settings.value(TYPWRT_FNT_KEY).toString();
-	if (font.isEmpty()) { // choose a sensible default
-		QFont fnt = QApplication::font();
-		fnt.setStyleHint(QFont::TypeWriter, QFont::PreferDefault);
-		fnt.setFixedPitch(true);
-		fnt.setFamily(fnt.defaultFamily()); // the family corresponding
-		font = fnt.toString();              // to current style hint
-	}
+    if (font.isEmpty())
+        { // choose a sensible default
+            QFont fnt = QApplication::font();
+            fnt.setStyleHint(QFont::TypeWriter, QFont::PreferDefault);
+            fnt.setFixedPitch(true);
+            fnt.setFamily(fnt.defaultFamily()); // the family corresponding
+            font = fnt.toString();              // to current style hint
+        }
 	QGit::TYPE_WRITER_FONT.fromString(font);
 
 	// set-up tab view
@@ -140,52 +141,53 @@ MainImpl::MainImpl(SCRef cd, QWidget* p) : QMainWindow(p) {
 	// disable all actions
 	updateGlobalActions(false);
 
-	connect(git, SIGNAL(fileNamesLoad(int, int)), this, SLOT(fileNamesLoad(int, int)));
+    connect(git, SIGNAL(fileNamesLoad(int, int)), this, SLOT(fileNamesLoad(int, int)));
 
-	connect(git, SIGNAL(newRevsAdded(const FileHistory*, const QVector<ShaString>&)),
-	        this, SLOT(newRevsAdded(const FileHistory*, const QVector<ShaString>&)));
+    connect(git, SIGNAL(newRevsAdded(const FileHistory*, const QVector<ShaString>&)),
+            this, SLOT(newRevsAdded(const FileHistory*, const QVector<ShaString>&)));
 
-	connect(this, SIGNAL(typeWriterFontChanged()), this, SIGNAL(updateRevDesc()));
+    connect(this, SIGNAL(typeWriterFontChanged()), this, SIGNAL(updateRevDesc()));
 
-	connect(this, SIGNAL(changeFont(const QFont&)), git, SIGNAL(changeFont(const QFont&)));
+    connect(this, SIGNAL(changeFont(const QFont&)), git, SIGNAL(changeFont(const QFont&)));
 
-	// connect cross-domain update signals
-	connect(rv->tab()->listViewLog, SIGNAL(doubleClicked(const QModelIndex&)),
-	        this, SLOT(listViewLog_doubleClicked(const QModelIndex&)));
+    // connect cross-domain update signals
+    connect(rv->tab()->listViewLog, SIGNAL(doubleClicked(const QModelIndex&)),
+            this, SLOT(listViewLog_doubleClicked(const QModelIndex&)));
 
-	connect(rv->tab()->fileList, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-	        this, SLOT(fileList_itemDoubleClicked(QListWidgetItem*)));
+    connect(rv->tab()->fileList, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+            this, SLOT(fileList_itemDoubleClicked(QListWidgetItem*)));
 
-	connect(treeView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
-	        this, SLOT(treeView_doubleClicked(QTreeWidgetItem*, int)));
+    connect(treeView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
+            this, SLOT(treeView_doubleClicked(QTreeWidgetItem*, int)));
 
-	// use most recent repo as startup dir if it exists and user opted to do so
-	QStringList recents(settings.value(REC_REP_KEY).toStringList());
-	QDir checkRepo;
-	if (	recents.size() >= 1
-		 && testFlag(REOPEN_REPO_F, FLAGS_KEY)
-		 && checkRepo.exists(recents.at(0)))
-	{
-		startUpDir = recents.at(0);
-	}
-	else {
-		startUpDir = (cd.isEmpty() ? QDir::current().absolutePath() : cd);
-	}
+    // use most recent repo as startup dir if it exists and user opted to do so
+    QStringList recents(settings.value(REC_REP_KEY).toStringList());
+    QDir checkRepo;
+    if (    recents.size() >= 1
+         && testFlag(REOPEN_REPO_F, FLAGS_KEY)
+         && checkRepo.exists(recents.at(0)))
+        {
+            startUpDir = recents.at(0);
+        }
+    else
+        {
+            startUpDir = (cd.isEmpty() ? QDir::current().absolutePath() : cd);
+        }
 
-	// MainImpl c'tor is called before to enter event loop,
-	// but some stuff requires event loop to init properly
-	QTimer::singleShot(10, this, SLOT(initWithEventLoopActive()));
+    // MainImpl c'tor is called before to enter event loop,
+    // but some stuff requires event loop to init properly
+    QTimer::singleShot(10, this, SLOT(initWithEventLoopActive()));
 }
 
-void MainImpl::initWithEventLoopActive() {
-
-	git->checkEnvironment();
-	setRepository(startUpDir);
-	startUpDir = ""; // one shot
+void MainImpl::initWithEventLoopActive()
+{
+    git->checkEnvironment();
+    setRepository(startUpDir);
+    startUpDir = ""; // one shot
 }
 
-void MainImpl::saveCurrentGeometry() {
-
+void MainImpl::saveCurrentGeometry()
+{
 	QVector<QSplitter*> v(1, treeSplitter);
 	QGit::saveGeometrySetting(QGit::MAIN_GEOM_KEY, this, &v);
 }
@@ -205,17 +207,19 @@ void MainImpl::highlightAbbrevSha(SCRef abbrevSha) {
 	ActSearchAndHighlight->toggle();
 }
 
-void MainImpl::lineEditSHA_returnPressed() {
-
+void MainImpl::lineEditSHA_returnPressed()
+{
 	QString sha = git->getRefSha(lineEditSHA->text());
 	if (!sha.isEmpty()) // good, we can resolve to an unique sha
-	{
-		rv->st.setSha(sha);
-		UPDATE_DOMAIN(rv);
-	} else { // try a multiple match search
-		highlightAbbrevSha(lineEditSHA->text());
-		goMatch(0);
-	}
+        {
+            rv->st.setSha(sha);
+            UPDATE_DOMAIN(rv);
+        }
+    else
+        { // try a multiple match search
+            highlightAbbrevSha(lineEditSHA->text());
+            goMatch(0);
+        }
 }
 
 void MainImpl::ActBack_activated() {
@@ -238,24 +242,25 @@ void MainImpl::ActForward_activated() {
 
 // *************************** ExternalDiffViewer ***************************
 
-void MainImpl::ActExternalDiff_activated() {
-
+void MainImpl::ActExternalDiff_activated()
+{
 	QStringList args;
 	QStringList filenames;
 	getExternalDiffArgs(&args, &filenames);
 	ExternalDiffProc* externalDiff = new ExternalDiffProc(filenames, this);
 	externalDiff->setWorkingDirectory(curDir);
 
-	if (!QGit::startProcess(externalDiff, args)) {
-		QString text("Cannot start external viewer: ");
-		text.append(args[0]);
-		QMessageBox::warning(this, "Error - QGit", text);
-		delete externalDiff;
-	}
+    if (!QGit::startProcess(externalDiff, args))
+        {
+            QString text("Cannot start external viewer: ");
+            text.append(args[0]);
+            QMessageBox::warning(this, "Error - QGit", text);
+            delete externalDiff;
+        }
 }
 
-void MainImpl::getExternalDiffArgs(QStringList* args, QStringList* filenames) {
-
+void MainImpl::getExternalDiffArgs(QStringList* args, QStringList* filenames)
+{
 	// save files to diff in working directory,
 	// will be removed by ExternalDiffProc on exit
 	QFileInfo f(rv->st.fileName());
@@ -298,16 +303,17 @@ void MainImpl::getExternalDiffArgs(QStringList* args, QStringList* filenames) {
 	// set process arguments
 	QStringList extDiffArgs = extDiff.split(' ');
 	QString curArg;
-	for (int i = 0; i < extDiffArgs.count(); i++) {
-		curArg = extDiffArgs.value(i);
+    for (int i = 0; i < extDiffArgs.count(); i++)
+        {
+            curArg = extDiffArgs.value(i);
 
-		// perform any filename replacements that are necessary
-		// (done inside the loop to handle whitespace in paths properly)
-		curArg.replace("%1", fName2);
-		curArg.replace("%2", fName1);
+            // perform any filename replacements that are necessary
+            // (done inside the loop to handle whitespace in paths properly)
+            curArg.replace("%1", fName2);
+            curArg.replace("%2", fName1);
 
-		args->append(curArg);
-	}
+            args->append(curArg);
+        }
 
 	// set filenames so that they can be deleted when the process completes
 	filenames->append(fName1);
@@ -341,7 +347,8 @@ void MainImpl::setRepository(SCRef newDir, bool refresh, bool keepSelection,
 		// call that is filtered out by setRepositoryBusy guard flag
 		ActFilterTree->toggle(); // triggers ActFilterTree_toggled()
 
-	try {
+    try
+    {
 		EM_REGISTER(exExiting);
 
 		bool archiveChanged;
@@ -381,11 +388,13 @@ void MainImpl::setRepository(SCRef newDir, bool refresh, bool keepSelection,
 		updateCommitMenu(ok && git->isStGITStack());
 		ActCheckWorkDir->setChecked(testFlag(DIFF_INDEX_F)); // could be changed in Git::init()
 
-		if (ok) {
-			updateGlobalActions(true);
-			if (archiveChanged)
-				updateRecentRepoMenu(curDir);
-		} else
+        if (ok)
+            {
+                updateGlobalActions(true);
+                if (archiveChanged)
+                    updateRecentRepoMenu(curDir);
+            }
+        else
 			statusBar()->showMessage("Not a git archive");
 
 exit:
@@ -395,13 +404,16 @@ exit:
 		if (quit && !startUpDir.isEmpty())
 			close();
 
-	} catch (int i) {
+    }
+    catch (int i)
+    {
 		EM_REMOVE(exExiting);
 
-		if (EM_MATCH(i, exExiting, "loading repository")) {
-			EM_THROW_PENDING;
-			return;
-		}
+        if (EM_MATCH(i, exExiting, "loading repository"))
+            {
+                EM_THROW_PENDING;
+                return;
+            }
 		const QString info("Exception \'" + EM_DESC(i) + "\' not "
 		                   "handled in setRepository...re-throw");
 		dbs(info);
@@ -409,8 +421,8 @@ exit:
 	}
 }
 
-void MainImpl::updateGlobalActions(bool b) {
-
+void MainImpl::updateGlobalActions(bool b)
+{
 	ActRefresh->setEnabled(b);
 	ActCheckWorkDir->setEnabled(b);
 	ActViewRev->setEnabled(b);
@@ -424,8 +436,8 @@ void MainImpl::updateGlobalActions(bool b) {
 }
 
 void MainImpl::updateContextActions(SCRef newRevSha, SCRef newFileName,
-                                    bool isDir, bool found) {
-
+                                    bool isDir, bool found)
+{
 	bool pathActionsEnabled = !newFileName.isEmpty();
 	bool fileActionsEnabled = (pathActionsEnabled && !isDir);
 
@@ -438,12 +450,13 @@ void MainImpl::updateContextActions(SCRef newRevSha, SCRef newFileName,
 	bool isTag, isUnApplied, isApplied;
 	isTag = isUnApplied = isApplied = false;
 
-	if (found) {
-		const Rev* r = git->revLookup(newRevSha);
-		isTag = git->checkRef(newRevSha, Git::TAG);
-		isUnApplied = r->isUnApplied;
-		isApplied = r->isApplied;
-	}
+    if (found)
+        {
+            const Rev* r = git->revLookup(newRevSha);
+            isTag = git->checkRef(newRevSha, Git::TAG);
+            isUnApplied = r->isUnApplied;
+            isApplied = r->isApplied;
+        }
 	ActBranch->setEnabled(found && (newRevSha != ZERO_SHA) && !isUnApplied);
 	ActTag->setEnabled(found && (newRevSha != ZERO_SHA) && !isUnApplied);
 	ActTagDelete->setEnabled(found && isTag && (newRevSha != ZERO_SHA) && !isUnApplied);
@@ -453,20 +466,20 @@ void MainImpl::updateContextActions(SCRef newRevSha, SCRef newFileName,
 
 // ************************* cross-domain update Actions ***************************
 
-void MainImpl::listViewLog_doubleClicked(const QModelIndex& index) {
-
+void MainImpl::listViewLog_doubleClicked(const QModelIndex& index)
+{
 	if (index.isValid() && ActViewDiff->isEnabled())
 		ActViewDiff->activate(QAction::Trigger);
 }
 
-void MainImpl::histListView_doubleClicked(const QModelIndex& index) {
-
+void MainImpl::histListView_doubleClicked(const QModelIndex& index)
+{
 	if (index.isValid() && ActViewRev->isEnabled())
 		ActViewRev->activate(QAction::Trigger);
 }
 
-void MainImpl::fileList_itemDoubleClicked(QListWidgetItem* item) {
-
+void MainImpl::fileList_itemDoubleClicked(QListWidgetItem* item)
+{
 	bool isFirst = (item && item->listWidget()->item(0) == item);
 	if (isFirst && rv->st.isMerge())
 		return;
@@ -479,8 +492,8 @@ void MainImpl::fileList_itemDoubleClicked(QListWidgetItem* item) {
 		ActViewFile->activate(QAction::Trigger);
 }
 
-void MainImpl::treeView_doubleClicked(QTreeWidgetItem* item, int) {
-
+void MainImpl::treeView_doubleClicked(QTreeWidgetItem* item, int)
+{
 	if (item && ActViewFile->isEnabled())
 		ActViewFile->activate(QAction::Trigger);
 }
@@ -505,69 +518,74 @@ void MainImpl::pushButtonCloseTab_clicked() {
 	}
 }
 
-void MainImpl::ActRangeDlg_activated() {
-
+void MainImpl::ActRangeDlg_activated()
+{
 	QString args;
 	RangeSelectImpl rs(this, &args, false, git);
 	bool quit = (rs.exec() == QDialog::Rejected); // modal execution
-	if (!quit) {
-		const QStringList l(args.split(" "));
-		setRepository(curDir, true, true, &l, true);
-	}
+    if (!quit)
+        {
+            const QStringList l(args.split(" "));
+            setRepository(curDir, true, true, &l, true);
+        }
 }
 
-void MainImpl::ActViewRev_activated() {
-
+void MainImpl::ActViewRev_activated()
+{
 	Domain* t;
-	if (currentTabType(&t) == TAB_FILE) {
-		rv->st = t->st;
-		UPDATE_DOMAIN(rv);
-	}
+    if (currentTabType(&t) == TAB_FILE)
+        {
+            rv->st = t->st;
+            UPDATE_DOMAIN(rv);
+        }
 	tabWdg->setCurrentWidget(rv->tabPage());
 }
 
-void MainImpl::ActViewFile_activated() {
-
+void MainImpl::ActViewFile_activated()
+{
 	openFileTab(firstTab<FileView>());
 }
 
-void MainImpl::ActViewFileNewTab_activated() {
-
+void MainImpl::ActViewFileNewTab_activated()
+{
 	openFileTab();
 }
 
 void MainImpl::openFileTab(FileView* fv) {
 
-	if (!fv) {
-		fv = new FileView(this, git);
-		tabWdg->addTab(fv->tabPage(), "File");
+    if (!fv)
+        {
+            fv = new FileView(this, git);
+            tabWdg->addTab(fv->tabPage(), "File");
 
-		connect(fv->tab()->histListView, SIGNAL(doubleClicked(const QModelIndex&)),
-		        this, SLOT(histListView_doubleClicked(const QModelIndex&)));
+            connect(fv->tab()->histListView, SIGNAL(doubleClicked(const QModelIndex&)),
+                    this, SLOT(histListView_doubleClicked(const QModelIndex&)));
 
-		connect(this, SIGNAL(closeAllTabs()), fv, SLOT(on_closeAllTabs()));
+            connect(this, SIGNAL(closeAllTabs()), fv, SLOT(on_closeAllTabs()));
 
-		ActViewFileNewTab->setEnabled(ActViewFile->isEnabled());
-	}
+            ActViewFileNewTab->setEnabled(ActViewFile->isEnabled());
+        }
 	tabWdg->setCurrentWidget(fv->tabPage());
 	fv->st = rv->st;
 	UPDATE_DOMAIN(fv);
 }
 
-void MainImpl::ActViewDiff_activated() {
-
+void MainImpl::ActViewDiff_activated()
+{
 	Domain* t;
-	if (currentTabType(&t) == TAB_FILE) {
-		rv->st = t->st;
-		UPDATE_DOMAIN(rv);
-	}
+    if (currentTabType(&t) == TAB_FILE)
+        {
+            rv->st = t->st;
+            UPDATE_DOMAIN(rv);
+        }
 	rv->viewPatch(false);
 	ActViewDiffNewTab->setEnabled(true);
 
-	if (ActSearchAndFilter->isChecked() || ActSearchAndHighlight->isChecked()) {
-		bool isRegExp = (cmbSearch->currentIndex() == CS_PATCH_REGEXP);
-		emit highlightPatch(lineEditFilter->text(), isRegExp);
-	}
+    if (ActSearchAndFilter->isChecked() || ActSearchAndHighlight->isChecked())
+        {
+            bool isRegExp = (cmbSearch->currentIndex() == CS_PATCH_REGEXP);
+            emit highlightPatch(lineEditFilter->text(), isRegExp);
+        }
 }
 
 void MainImpl::ActViewDiffNewTab_activated() {
@@ -575,28 +593,28 @@ void MainImpl::ActViewDiffNewTab_activated() {
 	rv->viewPatch(true);
 }
 
-bool MainImpl::eventFilter(QObject* obj, QEvent* ev) {
+bool MainImpl::eventFilter(QObject* obj, QEvent* ev)
+{
+    if (ev->type() == QEvent::Wheel)
+        {
+            QWheelEvent* e = static_cast<QWheelEvent*>(ev);
+            if (e->modifiers() == Qt::AltModifier)
+                {
+                    int idx = tabWdg->currentIndex();
+                    if (e->delta() < 0)
+                        idx = (++idx == tabWdg->count() ? 0 : idx);
+                    else
+                        idx = (--idx < 0 ? tabWdg->count() - 1 : idx);
 
-	if (ev->type() == QEvent::Wheel) {
-
-		QWheelEvent* e = static_cast<QWheelEvent*>(ev);
-		if (e->modifiers() == Qt::AltModifier) {
-
-			int idx = tabWdg->currentIndex();
-			if (e->delta() < 0)
-				idx = (++idx == tabWdg->count() ? 0 : idx);
-			else
-				idx = (--idx < 0 ? tabWdg->count() - 1 : idx);
-
-			tabWdg->setCurrentIndex(idx);
-			return true;
-		}
-	}
-	return QWidget::eventFilter(obj, ev);
+                    tabWdg->setCurrentIndex(idx);
+                    return true;
+                }
+        }
+    return QWidget::eventFilter(obj, ev);
 }
 
-void MainImpl::revisionsDragged(SCList selRevs) {
-
+void MainImpl::revisionsDragged(SCList selRevs)
+{
 	const QString h(QString::fromLatin1("@") + curDir + '\n');
 	const QString dragRevs = selRevs.join(h).append(h).trimmed();
 	QDrag* drag = new QDrag(this);
@@ -613,11 +631,12 @@ void MainImpl::revisionsDropped(SCList remoteRevs) {
 		return;
 
 	QDir dr(curDir + QGit::PATCHES_DIR);
-	if (dr.exists()) {
-		const QString tmp("Please remove stale import directory " + dr.absolutePath());
-		statusBar()->showMessage(tmp);
-		return;
-	}
+    if (dr.exists())
+        {
+            const QString tmp("Please remove stale import directory " + dr.absolutePath());
+            statusBar()->showMessage(tmp);
+            return;
+        }
 	bool workDirOnly, fold;
 	if (!askApplyPatchParameters(&workDirOnly, &fold))
 		return;
@@ -631,35 +650,37 @@ void MainImpl::revisionsDropped(SCList remoteRevs) {
 
 	uint revNum = 0;
 	QStringList::const_iterator it(remoteRevs.constEnd());
-	do {
-		--it;
+    do
+        {
+            --it;
 
-		QString tmp("Importing revision %1 of %2");
-		statusBar()->showMessage(tmp.arg(++revNum).arg(remoteRevs.count()));
+            QString tmp("Importing revision %1 of %2");
+            statusBar()->showMessage(tmp.arg(++revNum).arg(remoteRevs.count()));
 
-		SCRef sha((*it).section('@', 0, 0));
-		SCRef remoteRepo((*it).section('@', 1));
+            SCRef sha((*it).section('@', 0, 0));
+            SCRef remoteRepo((*it).section('@', 1));
 
-		if (!dr.exists(remoteRepo))
-			break;
+            if (!dr.exists(remoteRepo))
+                break;
 
-		// we create patches one by one
-		if (!git->formatPatch(QStringList(sha), dr.absolutePath(), remoteRepo))
-			break;
+            // we create patches one by one
+            if (!git->formatPatch(QStringList(sha), dr.absolutePath(), remoteRepo))
+                break;
 
-		dr.refresh();
-		if (dr.count() != 1) {
-			qDebug("ASSERT in on_droppedRevisions: found %i files "
-			       "in %s", dr.count(), QGit::PATCHES_DIR.toLatin1().constData());
-			break;
-		}
-		SCRef fn(dr.absoluteFilePath(dr[0]));
-		bool is_applied = git->applyPatchFile(fn, fold, Git::optDragDrop);
-		dr.remove(fn);
-		if (!is_applied)
-			break;
+            dr.refresh();
+            if (dr.count() != 1) {
+                qDebug("ASSERT in on_droppedRevisions: found %i files "
+                       "in %s", dr.count(), QGit::PATCHES_DIR.toLatin1().constData());
+                break;
+            }
+            SCRef fn(dr.absoluteFilePath(dr[0]));
+            bool is_applied = git->applyPatchFile(fn, fold, Git::optDragDrop);
+            dr.remove(fn);
+            if (!is_applied)
+                break;
 
-	} while (it != remoteRevs.constBegin());
+        }
+    while (it != remoteRevs.constBegin());
 
 	if (it == remoteRevs.constBegin())
 		statusBar()->clearMessage();
@@ -695,81 +716,87 @@ void MainImpl::newRevsAdded(const FileHistory* fh, const QVector<ShaString>&) {
 		ActCommit_setEnabled(true);
 }
 
-void MainImpl::lineEditFilter_returnPressed() {
-
+void MainImpl::lineEditFilter_returnPressed()
+{
 	ActSearchAndFilter->setChecked(true);
 }
 
-void MainImpl::ActSearchAndFilter_toggled(bool isOn) {
-
+void MainImpl::ActSearchAndFilter_toggled(bool isOn)
+{
 	ActSearchAndHighlight->setEnabled(!isOn);
 	ActSearchAndFilter->setEnabled(false);
 	filterList(isOn, false); // blocking call
 	ActSearchAndFilter->setEnabled(true);
 }
 
-void MainImpl::ActSearchAndHighlight_toggled(bool isOn) {
-
+void MainImpl::ActSearchAndHighlight_toggled(bool isOn)
+{
 	ActSearchAndFilter->setEnabled(!isOn);
 	ActSearchAndHighlight->setEnabled(false);
 	filterList(isOn, true); // blocking call
 	ActSearchAndHighlight->setEnabled(true);
 }
 
-void MainImpl::filterList(bool isOn, bool onlyHighlight) {
+void MainImpl::filterList(bool isOn, bool onlyHighlight)
+{
+    lineEditFilter->setEnabled(!isOn);
+    cmbSearch->setEnabled(!isOn);
 
-	lineEditFilter->setEnabled(!isOn);
-	cmbSearch->setEnabled(!isOn);
+    SCRef filter(lineEditFilter->text());
+    if (filter.isEmpty())
+        return;
 
-	SCRef filter(lineEditFilter->text());
-	if (filter.isEmpty())
-		return;
-
-	ShaSet shaSet;
-	bool patchNeedsUpdate, isRegExp;
-	patchNeedsUpdate = isRegExp = false;
-	int idx = cmbSearch->currentIndex(), colNum = 0;
-	if (isOn) {
-		switch (idx) {
-		case CS_SHORT_LOG:
-			colNum = LOG_COL;
-			shortLogRE.setPattern(filter);
-			break;
-		case CS_LOG_MSG:
-			colNum = LOG_MSG_COL;
-			longLogRE.setPattern(filter);
-			break;
-		case CS_AUTHOR:
-			colNum = AUTH_COL;
-			break;
-		case CS_SHA1:
-			colNum = COMMIT_COL;
-			break;
-		case CS_FILE:
-		case CS_PATCH:
-		case CS_PATCH_REGEXP:
-			colNum = SHA_MAP_COL;
-			QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-			EM_PROCESS_EVENTS; // to paint wait cursor
-			if (idx == CS_FILE)
-				git->getFileFilter(filter, shaSet);
-			else {
-				isRegExp = (idx == CS_PATCH_REGEXP);
-				if (!git->getPatchFilter(filter, isRegExp, shaSet)) {
-					QApplication::restoreOverrideCursor();
-					ActSearchAndFilter->toggle();
-					return;
-				}
-				patchNeedsUpdate = (shaSet.count() > 0);
-			}
-			QApplication::restoreOverrideCursor();
-			break;
-		}
-	} else {
-		patchNeedsUpdate = (idx == CS_PATCH || idx == CS_PATCH_REGEXP);
-		shortLogRE.setPattern("");
-		longLogRE.setPattern("");
-	}
+    ShaSet shaSet;
+    bool patchNeedsUpdate, isRegExp;
+    patchNeedsUpdate = isRegExp = false;
+    int idx = cmbSearch->currentIndex(), colNum = 0;
+    if (isOn)
+        {
+            switch (idx)
+                {
+                case CS_SHORT_LOG:
+                    colNum = LOG_COL;
+                    shortLogRE.setPattern(filter);
+                    break;
+                case CS_LOG_MSG:
+                    colNum = LOG_MSG_COL;
+                    longLogRE.setPattern(filter);
+                    break;
+                case CS_AUTHOR:
+                    colNum = AUTH_COL;
+                    break;
+                case CS_SHA1:
+                    colNum = COMMIT_COL;
+                    break;
+                case CS_FILE:
+                case CS_PATCH:
+                case CS_PATCH_REGEXP:
+                    colNum = SHA_MAP_COL;
+                    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+                    EM_PROCESS_EVENTS; // to paint wait cursor
+                    if (idx == CS_FILE)
+                        git->getFileFilter(filter, shaSet);
+                    else
+                        {
+                            isRegExp = (idx == CS_PATCH_REGEXP);
+                            if (!git->getPatchFilter(filter, isRegExp, shaSet))
+                                {
+                                    QApplication::restoreOverrideCursor();
+                                    ActSearchAndFilter->toggle();
+                                    return;
+                                }
+                            patchNeedsUpdate = (shaSet.count() > 0);
+                        }
+                    QApplication::restoreOverrideCursor();
+                    break;
+                }
+        }
+    else
+        {
+            patchNeedsUpdate = (idx == CS_PATCH || idx == CS_PATCH_REGEXP);
+            shortLogRE.setPattern("");
+            longLogRE.setPattern("");
+        }
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
 	ListView* lv = rv->tab()->listViewLog;
@@ -788,41 +815,44 @@ void MainImpl::filterList(bool isOn, bool onlyHighlight) {
 	QApplication::postEvent(rv, new MessageEvent(msg)); // deferred message, after update
 }
 
-bool MainImpl::event(QEvent* e) {
+bool MainImpl::event(QEvent* e)
+{
+    BaseEvent* de = dynamic_cast<BaseEvent*>(e);
+    if (!de)
+        return QWidget::event(e);
 
-	BaseEvent* de = dynamic_cast<BaseEvent*>(e);
-	if (!de)
-		return QWidget::event(e);
+    SCRef data = de->myData();
+    bool ret = true;
 
-	SCRef data = de->myData();
-	bool ret = true;
-
-	switch (e->type()) {
-	case ERROR_EV: {
-		QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
-		EM_PROCESS_EVENTS;
-		MainExecErrorEvent* me = (MainExecErrorEvent*)e;
-		QString text("An error occurred while executing command:\n\n");
-		text.append(me->command() + "\n\nGit says: \n\n" + me->report());
-		QMessageBox::warning(this, "Error - QGit", text);
-		QApplication::restoreOverrideCursor(); }
-		break;
-	case MSG_EV:
-		statusBar()->showMessage(data);
-		break;
-	case POPUP_LIST_EV:
-		doContexPopup(data);
-		break;
-	case POPUP_FILE_EV:
-	case POPUP_TREE_EV:
-		doFileContexPopup(data, e->type());
-		break;
-	default:
-		dbp("ASSERT in MainImpl::event unhandled event %1", e->type());
-		ret = false;
-		break;
-	}
-	return ret;
+    switch (e->type())
+        {
+        case ERROR_EV:
+            {
+                QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
+                EM_PROCESS_EVENTS;
+                MainExecErrorEvent* me = (MainExecErrorEvent*)e;
+                QString text("An error occurred while executing command:\n\n");
+                text.append(me->command() + "\n\nGit says: \n\n" + me->report());
+                QMessageBox::warning(this, "Error - QGit", text);
+                QApplication::restoreOverrideCursor();
+            }
+            break;
+        case MSG_EV:
+            statusBar()->showMessage(data);
+            break;
+        case POPUP_LIST_EV:
+            doContexPopup(data);
+            break;
+        case POPUP_FILE_EV:
+        case POPUP_TREE_EV:
+            doFileContexPopup(data, e->type());
+            break;
+        default:
+            dbp("ASSERT in MainImpl::event unhandled event %1", e->type());
+            ret = false;
+            break;
+        }
+    return ret;
 }
 
 int MainImpl::currentTabType(Domain** t) {
