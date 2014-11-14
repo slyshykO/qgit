@@ -846,27 +846,29 @@ bool Git::populateRenamedPatches(SCRef renamedSha, SCList newNames, FileHistory*
 	return true;
 }
 
-void Git::populateFileNamesMap() {
+void Git::populateFileNamesMap()
+{
+    for (int i = 0; i < dirNamesVec.count(); ++i)
+        dirNamesMap.insert(dirNamesVec[i], i);
 
-	for (int i = 0; i < dirNamesVec.count(); ++i)
-		dirNamesMap.insert(dirNamesVec[i], i);
-
-	for (int i = 0; i < fileNamesVec.count(); ++i)
-		fileNamesMap.insert(fileNamesVec[i], i);
+    for (int i = 0; i < fileNamesVec.count(); ++i)
+        fileNamesMap.insert(fileNamesVec[i], i);
 }
 
-void Git::loadFileCache() {
-
-	if (!fileCacheAccessed) {
-
-		fileCacheAccessed = true;
-		QByteArray shaBuf;
-		if (Cache::load(gitDir, revsFiles, dirNamesVec, fileNamesVec, shaBuf)) {
-			revsFilesShaBackupBuf.append(shaBuf);
-			populateFileNamesMap();
-		} else
-			dbs("ERROR: unable to load file names cache");
-	}
+void Git::loadFileCache()
+{
+    if (!fileCacheAccessed)
+        {
+            fileCacheAccessed = true;
+            QByteArray shaBuf;
+            if (Cache::load(gitDir, revsFiles, dirNamesVec, fileNamesVec, shaBuf))
+                {
+                    revsFilesShaBackupBuf.append(shaBuf);
+                    populateFileNamesMap();
+                }
+            else
+                dbs("ERROR: unable to load file names cache");
+        }
 }
 
 void Git::loadFileNames()
