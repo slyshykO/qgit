@@ -14,7 +14,6 @@
 #include "myprocess.h"
 
 MyProcess::MyProcess(QObject *go, Git* g, const QString& wd, bool err) : QProcess(g) {
-
 	guiObject = go;
 	git = g;
 	workDir = wd;
@@ -25,7 +24,6 @@ MyProcess::MyProcess(QObject *go, Git* g, const QString& wd, bool err) : QProces
 }
 
 bool MyProcess::runAsync(SCRef rc, QObject* rcv, SCRef buf) {
-
 	async = true;
 	runCmd = rc;
 	receiver = rcv;
@@ -37,7 +35,6 @@ bool MyProcess::runAsync(SCRef rc, QObject* rcv, SCRef buf) {
 }
 
 bool MyProcess::runSync(SCRef rc, QByteArray* ro, QObject* rcv, SCRef buf) {
-
 	async = false;
 	runCmd = rc;
 	runOutput = ro;
@@ -66,7 +63,6 @@ bool MyProcess::runSync(SCRef rc, QByteArray* ro, QObject* rcv, SCRef buf) {
 }
 
 void MyProcess::setupSignals() {
-
 	connect(git, SIGNAL(cancelAllProcesses()),
 	        this, SLOT(on_cancel()));
 
@@ -92,7 +88,6 @@ void MyProcess::setupSignals() {
 }
 
 void MyProcess::sendErrorMsg(bool notStarted, SCRef err) {
-
 	if (!errorReportingEnabled)
 		return;
 
@@ -108,7 +103,6 @@ void MyProcess::sendErrorMsg(bool notStarted, SCRef err) {
 }
 
 bool MyProcess::launchMe(SCRef runCmd, SCRef buf) {
-
 	arguments = splitArgList(runCmd);
 	if (arguments.isEmpty())
 		return false;
@@ -122,7 +116,6 @@ bool MyProcess::launchMe(SCRef runCmd, SCRef buf) {
 }
 
 void MyProcess::on_readyReadStandardOutput() {
-
 	if (canceling)
 		return;
 
@@ -134,7 +127,6 @@ void MyProcess::on_readyReadStandardOutput() {
 }
 
 void MyProcess::on_readyReadStandardError() {
-
 	if (canceling)
 		return;
 
@@ -145,7 +137,6 @@ void MyProcess::on_readyReadStandardError() {
 }
 
 void MyProcess::on_finished(int exitCode, QProcess::ExitStatus exitStatus) {
-
 	// Checking exingStatus is not reliable under Windows where if the
 	// process was terminated with TerminateProcess() from another
 	// application its value is still NormalExit
@@ -177,8 +168,8 @@ void MyProcess::on_finished(int exitCode, QProcess::ExitStatus exitStatus) {
 		deleteLater();
 }
 
-void MyProcess::on_cancel() {
-
+void MyProcess::on_cancel()
+{
 	canceling = true;
 
 #ifdef Q_OS_WIN32
@@ -242,7 +233,6 @@ const QStringList MyProcess::splitArgList(SCRef cmd) {
 
 void MyProcess::restoreSpaces(QString& newCmd, const QChar& sepChar) {
 // restore spaces inside quoted text, supports nested quote types
-
 	QChar quoteChar;
 	bool replace = false;
 	for (int i = 0; i < newCmd.length(); i++) {
