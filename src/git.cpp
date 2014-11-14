@@ -76,27 +76,30 @@ const QString FileHistory::sha(int row) const {
 	return (row < 0 || row >= rowCnt ? "" : QString(revOrder.at(row)));
 }
 
-void FileHistory::flushTail() {
-
-	if (earlyOutputCnt < 0 || earlyOutputCnt >= revOrder.count()) {
-		dbp("ASSERT in FileHistory::flushTail(), earlyOutputCnt is %1", earlyOutputCnt);
-		return;
-	}
+void FileHistory::flushTail()
+{
+    if (earlyOutputCnt < 0 || earlyOutputCnt >= revOrder.count())
+        {
+            dbp("ASSERT in FileHistory::flushTail(), earlyOutputCnt is %1", earlyOutputCnt);
+            return;
+        }
 	int cnt = revOrder.count() - earlyOutputCnt + 1;
     beginResetModel();
-	while (cnt > 0) {
-		const ShaString& sha = revOrder.last();
-		const Rev* c = revs[sha];
-		delete c;
-		revs.remove(sha);
-		revOrder.pop_back();
-		cnt--;
-	}
+    while (cnt > 0)
+        {
+            const ShaString& sha = revOrder.last();
+            const Rev* c = revs[sha];
+            delete c;
+            revs.remove(sha);
+            revOrder.pop_back();
+            cnt--;
+        }
 	// reset all lanes, will be redrawn
-	for (int i = earlyOutputCntBase; i < revOrder.count(); i++) {
-		Rev* c = const_cast<Rev*>(revs[revOrder[i]]);
-		c->lanes.clear();
-	}
+    for (int i = earlyOutputCntBase; i < revOrder.count(); i++)
+        {
+            Rev* c = const_cast<Rev*>(revs[revOrder[i]]);
+            c->lanes.clear();
+        }
 	firstFreeLane = earlyOutputCntBase;
 	lns->clear();
 	rowCnt = revOrder.count();
@@ -105,11 +108,12 @@ void FileHistory::flushTail() {
 
 void FileHistory::clear(bool complete) {
 
-	if (!complete) {
-		if (revOrder.count() > 0)
-			flushTail();
-		return;
-	}
+    if (!complete)
+        {
+            if (revOrder.count() > 0)
+                flushTail();
+            return;
+        }
 	git->cancelDataLoading(this);
 
     beginResetModel();
@@ -124,13 +128,16 @@ void FileHistory::clear(bool complete) {
 	qDeleteAll(rowData);
 	rowData.clear();
 
-	if (testFlag(REL_DATE_F)) {
-		secs = QDateTime::currentDateTime().toTime_t();
-		headerInfo[4] = "Last Change";
-	} else {
-		secs = 0;
-		headerInfo[4] = "Author Date";
-	}
+    if (testFlag(REL_DATE_F))
+        {
+            secs = QDateTime::currentDateTime().toTime_t();
+            headerInfo[4] = "Last Change";
+        }
+    else
+        {
+            secs = 0;
+            headerInfo[4] = "Author Date";
+        }
 	rowCnt = revOrder.count();
 	annIdValid = false;
     endResetModel();

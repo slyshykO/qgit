@@ -16,7 +16,6 @@ using namespace QGit;
 
 void StateInfo::S::clear()
 {
-
     sha = fn = dtSha = "";
     isM = allM = false;
     sel = true;
@@ -24,7 +23,6 @@ void StateInfo::S::clear()
 
 bool StateInfo::S::operator==(const StateInfo::S& st) const
 {
-
     if (&st == this)
         return true;
 
@@ -38,13 +36,11 @@ bool StateInfo::S::operator==(const StateInfo::S& st) const
 
 bool StateInfo::S::operator!=(const StateInfo::S& st) const
 {
-
     return !(StateInfo::S::operator==(st));
 }
 
 void StateInfo::clear()
 {
-
     nextS.clear();
     curS.clear();
     prevS.clear();
@@ -53,7 +49,6 @@ void StateInfo::clear()
 
 StateInfo& StateInfo::operator=(const StateInfo& newState)
 {
-
     if (&newState != this)
         {
             if (isLocked)
@@ -66,7 +61,6 @@ StateInfo& StateInfo::operator=(const StateInfo& newState)
 
 bool StateInfo::operator==(const StateInfo& newState) const
 {
-
     if (&newState == this)
         return true;
 
@@ -75,13 +69,11 @@ bool StateInfo::operator==(const StateInfo& newState) const
 
 bool StateInfo::operator!=(const StateInfo& newState) const
 {
-
     return !(StateInfo::operator==(newState));
 }
 
 bool StateInfo::isChanged(uint what) const
 {
-
     bool ret = false;
     if (what & SHA)
         ret = (sha(true) != sha(false));
@@ -100,10 +92,8 @@ bool StateInfo::isChanged(uint what) const
 
 // ************************* Domain ****************************
 
-Domain::Domain(MainImpl* m, Git* g, bool isMain
-               ) : QObject(m), git(g)
+Domain::Domain(MainImpl* m, Git* g, bool isMain ) : QObject(m), git(g)
 {
-
     EM_INIT(exDeleteRequest, "Deleting domain");
     EM_INIT(exCancelRequest, "Canceling update");
 
@@ -119,7 +109,6 @@ Domain::Domain(MainImpl* m, Git* g, bool isMain
 
 Domain::~Domain()
 {
-
     if (!parent())
         return;
 
@@ -130,7 +119,6 @@ Domain::~Domain()
 
 void Domain::clear(bool complete)
 {
-
     if (complete)
         st.clear();
 
@@ -139,13 +127,11 @@ void Domain::clear(bool complete)
 
 void Domain::on_closeAllTabs()
 {
-
     delete this; // must be sync, deleteLater() does not work
 }
 
 void Domain::deleteWhenDone()
 {
-
     if (!EM_IS_PENDING(exDeleteRequest))
         EM_RAISE(exDeleteRequest);
 
@@ -156,7 +142,6 @@ void Domain::deleteWhenDone()
 
 void Domain::on_deleteWhenDone()
 {
-
     if (!EM_IS_PENDING(exDeleteRequest))
         deleteLater();
     else
@@ -165,7 +150,6 @@ void Domain::on_deleteWhenDone()
 
 void Domain::setThrowOnDelete(bool b)
 {
-
     if (b)
         EM_REGISTER(exDeleteRequest);
     else
@@ -174,39 +158,33 @@ void Domain::setThrowOnDelete(bool b)
 
 bool Domain::isThrowOnDeleteRaised(int excpId, SCRef curContext)
 {
-
     return EM_MATCH(excpId, exDeleteRequest, curContext);
 }
 
 MainImpl* Domain::m() const
 {
-
     return static_cast<MainImpl*>(parent());
 }
 
 void Domain::showStatusBarMessage(const QString& msg, int timeout)
 {
-
     m()->statusBar()->showMessage(msg, timeout);
 }
 
 void Domain::setTabCaption(const QString& caption)
 {
-
     int idx = m()->tabWdg->indexOf(container);
     m()->tabWdg->setTabText(idx, caption);
 }
 
 bool Domain::setReadyToDrag(bool b)
 {
-
     readyToDrag = (b && !busy && !dragging && !dropping);
     return readyToDrag;
 }
 
 bool Domain::setDragging(bool b)
 {
-
     bool dragFinished = (!b && dragging);
 
     dragging = (b && readyToDrag && !dropping);
@@ -222,7 +200,6 @@ bool Domain::setDragging(bool b)
 
 void Domain::unlinkDomain(Domain* d)
 {
-
     d->linked = false;
     while (d->disconnect(SIGNAL(updateRequested(StateInfo)), this))
         ;  // a signal is emitted for every connection you make,
@@ -231,7 +208,6 @@ void Domain::unlinkDomain(Domain* d)
 
 void Domain::linkDomain(Domain* d)
 {
-
     unlinkDomain(d); // be sure only one connection is active
     connect(d, SIGNAL(updateRequested(StateInfo)), this, SLOT(on_updateRequested(StateInfo)));
     d->linked = true;
@@ -239,7 +215,6 @@ void Domain::linkDomain(Domain* d)
 
 void Domain::on_updateRequested(StateInfo newSt)
 {
-
     st = newSt;
     UPDATE();
 }
@@ -258,7 +233,6 @@ bool Domain::flushQueue()
 
 bool Domain::event(QEvent* e)
 {
-
     bool fromMaster = false;
 
     switch (e->type())
@@ -283,7 +257,6 @@ bool Domain::event(QEvent* e)
 
 void Domain::populateState()
 {
-
     const Rev* r = git->revLookup(st.sha());
     if (r)
         st.setIsMerge(r->parentsCount() > 1);
@@ -291,7 +264,6 @@ void Domain::populateState()
 
 void Domain::update(bool fromMaster, bool force)
 {
-
     if (busy && st.requestPending())
         {
             // quick exit current (obsoleted) update but only if state
@@ -400,7 +372,6 @@ void Domain::update(bool fromMaster, bool force)
 
 void Domain::sendPopupEvent()
 {
-
     // call an async context popup, must be executed
     // after returning to event loop
     DeferredPopupEvent* e = new DeferredPopupEvent(popupData, popupType);
@@ -410,7 +381,6 @@ void Domain::sendPopupEvent()
 
 void Domain::on_contextMenu(const QString& data, int type)
 {
-
     popupType = type;
     popupData = data;
 
