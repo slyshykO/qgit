@@ -536,7 +536,8 @@ void FileContent::showFileImage() {
 	}
 }
 
-void FileContent::setAnnList() {
+void FileContent::setAnnList()
+{
 
 	int linesNum = document()->blockCount();
 	int linesNumDigits = QString::number(linesNum).length();
@@ -545,12 +546,13 @@ void FileContent::setAnnList() {
 
 	isAnnotationAppended = isShowAnnotate && curAnn;
 
-	if (isAnnotationAppended) {
-		annoMaxLen = annotateLength(curAnn);
-		it = curAnn->lines.constBegin();
-		endIt = curAnn->lines.constEnd();
-		curId = curAnn->annId;
-	}
+    if (isAnnotationAppended)
+        {
+            annoMaxLen = annotateLength(curAnn);
+            it = curAnn->lines.constBegin();
+            endIt = curAnn->lines.constEnd();
+            curId = curAnn->annId;
+        }
 	listWidgetAnn->setFont(currentFont());
 
 	QString tmp;
@@ -559,75 +561,80 @@ void FileContent::setAnnList() {
 
 	QStringList sl;
 	QVector<int> curIdLines;
-	for (int i = 0; i < linesNum; i++) {
+    for (int i = 0; i < linesNum; i++)
+        {
+            if (isAnnotationAppended)
+                {
+                    if (it != endIt)
+                        tmp = (*(it++)).leftJustified(annoMaxLen);
+                    else
+                        tmp = QString().leftJustified(annoMaxLen);
 
-		if (isAnnotationAppended) {
-			if (it != endIt)
-				tmp = (*(it++)).leftJustified(annoMaxLen);
-			else
-				tmp = QString().leftJustified(annoMaxLen);
+                    if (tmp.section('.',0 ,0).toInt() == curId)
+                        curIdLines.append(i);
+                }
+            else
+                tmp.clear();
 
-			if (tmp.section('.',0 ,0).toInt() == curId)
-				curIdLines.append(i);
-		} else
-			tmp.clear();
-
-		tmp.append(QString(" %1 ").arg(i + 1, linesNumDigits));
-		sl.append(tmp);
-	}
+            tmp.append(QString(" %1 ").arg(i + 1, linesNumDigits));
+            sl.append(tmp);
+        }
 	sl.append(QString());  // QTextEdit adds a blank line after content
 	listWidgetAnn->setUpdatesEnabled(false);
 	listWidgetAnn->clear();
 	listWidgetAnn->addItems(sl);
 
 	QAbstractTextDocumentLayout *layout = document()->documentLayout();
-	if (layout != NULL) {
-		int previousBottom = 0;
-		QTextBlock block = document()->begin();
-		for (int i = 0; i < linesNum; i++) {
-			int bottom = layout->blockBoundingRect(block).bottom();
-			QListWidgetItem* item = listWidgetAnn->item(i);
-			item->setSizeHint(QSize(0, bottom - previousBottom));
-			item->setTextAlignment(Qt::AlignVCenter);  // Move down a pixel or so.
+    if (layout != NULL)
+        {
+            int previousBottom = 0;
+            QTextBlock block = document()->begin();
+            for (int i = 0; i < linesNum; i++)
+                {
+                    int bottom = lround(layout->blockBoundingRect(block).bottom());
+                    QListWidgetItem* item = listWidgetAnn->item(i);
+                    item->setSizeHint(QSize(0, bottom - previousBottom));
+                    item->setTextAlignment(Qt::AlignVCenter);  // Move down a pixel or so.
 
-			previousBottom = bottom;
-			block = block.next();
-		}
-	}
+                    previousBottom = bottom;
+                    block = block.next();
+                }
+        }
 
-	QBrush fore(Qt::darkRed);
-	QBrush back(Qt::lightGray);
-	QFont f(listWidgetAnn->font());
-	f.setBold(true);
-	FOREACH (QVector<int>, it, curIdLines) {
-		QListWidgetItem* item = listWidgetAnn->item(*it);
-		item->setForeground(fore);
-		item->setBackground(back);
-		item->setFont(f);
-	}
-	/* When listWidgetAnn get focus for the first time the current
-	   item, if not already present, is set to the first row and
-	   scrolling starts from there, so set a proper current item here
-	*/
-	int topRow = lineAtTop() + 1;
-	listWidgetAnn->setCurrentRow(topRow);
-	listWidgetAnn->adjustSize(); // update scrollbar state
-	adjustAnnListSize(width);
-	listWidgetAnn->setUpdatesEnabled(true);
+    QBrush fore(Qt::darkRed);
+    QBrush back(Qt::lightGray);
+    QFont f(listWidgetAnn->font());
+    f.setBold(true);
+    for(const auto it : curIdLines)
+        {
+            QListWidgetItem* item = listWidgetAnn->item(it);
+            item->setForeground(fore);
+            item->setBackground(back);
+            item->setFont(f);
+        }
+    /* When listWidgetAnn get focus for the first time the current
+       item, if not already present, is set to the first row and
+       scrolling starts from there, so set a proper current item here
+    */
+    int topRow = lineAtTop() + 1;
+    listWidgetAnn->setCurrentRow(topRow);
+    listWidgetAnn->adjustSize(); // update scrollbar state
+    adjustAnnListSize(width);
+    listWidgetAnn->setUpdatesEnabled(true);
 }
 
-void FileContent::adjustAnnListSize(int width) {
-
-	QRect r = listWidgetAnn->geometry();
-	r.setWidth(width);
-	r.setHeight(geometry().height());
-	listWidgetAnn->setGeometry(r);
-	setViewportMargins(width, 0, 0, 0);
+void FileContent::adjustAnnListSize(int width)
+{
+    QRect r = listWidgetAnn->geometry();
+    r.setWidth(width);
+    r.setHeight(geometry().height());
+    listWidgetAnn->setGeometry(r);
+    setViewportMargins(width, 0, 0, 0);
 }
 
-void FileContent::resizeEvent(QResizeEvent* e) {
-
-	QTextEdit::resizeEvent(e);
-	int width = listWidgetAnn->geometry().width();
-	adjustAnnListSize(width); // update list width
+void FileContent::resizeEvent(QResizeEvent* e)
+{
+    QTextEdit::resizeEvent(e);
+    int width = listWidgetAnn->geometry().width();
+    adjustAnnListSize(width); // update list width
 }

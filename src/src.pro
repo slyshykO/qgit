@@ -1,7 +1,8 @@
 # Under Windows launch script start_qgit.bat needs the
 # value GIT_EXEC_DIR to be set to the git bin directory
 #GIT_EXEC_DIR = "d:/cygwin/bin"
-GIT_EXEC_DIR = "c:/Program Files (x86)/Git/bin"
+GIT_EXEC_DIR = "c:/Program Files (x86)/Git/bin/"
+
 
 # Under Windows uncomment following line to enable console messages
 #CONFIG += ENABLE_CONSOLE_MSG

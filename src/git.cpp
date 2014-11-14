@@ -307,36 +307,38 @@ Git::Git(QObject* p) : QObject(p) {
 	revsFiles.reserve(MAX_DICT_SIZE);
 }
 
-void Git::checkEnvironment() {
+void Git::checkEnvironment()
+{
+    QString version;
+    if (run("git --version", &version))
+        {
+            version = version.section(' ', -1, -1).section('.', 0, 2);
+            if (version < GIT_VERSION)
+                {
+                    // simply send information, the 'not compatible version'
+                    // policy should be implemented upstream
+                    const QString cmd("Current git version is " + version +
+                          " but is required " + GIT_VERSION + " or better");
 
-	QString version;
-	if (run("git --version", &version)) {
+                    const QString errorDesc("Your installed git is too old."
+                          "\nPlease upgrade to avoid possible misbehaviours.");
 
-		version = version.section(' ', -1, -1).section('.', 0, 2);
-		if (version < GIT_VERSION) {
-
-			// simply send information, the 'not compatible version'
-			// policy should be implemented upstream
-			const QString cmd("Current git version is " + version +
-			      " but is required " + GIT_VERSION + " or better");
-
-			const QString errorDesc("Your installed git is too old."
-			      "\nPlease upgrade to avoid possible misbehaviours.");
-
-			MainExecErrorEvent* e = new MainExecErrorEvent(cmd, errorDesc);
-			QApplication::postEvent(parent(), e);
-		}
-	} else {
-		dbs("Cannot find git files");
-		return;
-	}
-	errorReportingEnabled = false;
-	isTextHighlighterFound = run("source-highlight -V", &version);
-	errorReportingEnabled = true;
-	if (isTextHighlighterFound)
-		textHighlighterVersionFound = version.section('\n', 0, 0);
-	else
-		textHighlighterVersionFound = "GNU source-highlight not installed";
+                    MainExecErrorEvent* e = new MainExecErrorEvent(cmd, errorDesc);
+                    QApplication::postEvent(parent(), e);
+                }
+        }
+    else
+        {
+            dbs("Cannot find git files");
+            return;
+        }
+    errorReportingEnabled = false;
+    isTextHighlighterFound = run("source-highlight -V", &version);
+    errorReportingEnabled = true;
+    if (isTextHighlighterFound)
+        textHighlighterVersionFound = version.section('\n', 0, 0);
+    else
+        textHighlighterVersionFound = "GNU source-highlight not installed";
 }
 
 void Git::userInfo(SList info) {
@@ -502,47 +504,43 @@ const QStringList Git::getRefName(SCRef sha, RefType type, QString* curBranch) c
 	return QStringList();
 }
 
-const QStringList Git::getAllRefSha(uint mask) {
-
-	QStringList shas;
-	FOREACH (RefMap, it, refsShaMap)
-		if ((*it).type & mask)
-			shas.append(it.key());
-	return shas;
+const QStringList Git::getAllRefSha(uint mask)
+{
+    QStringList shas;
+    FOREACH (RefMap, it, refsShaMap)
+        if ((*it).type & mask)
+            shas.append(it.key());
+    return shas;
 }
 
-const QString Git::getRefSha(SCRef refName, RefType type, bool askGit) {
+const QString Git::getRefSha(SCRef refName, RefType type, bool askGit)
+{
+    bool any = (type == ANY_REF);
 
-	bool any = (type == ANY_REF);
+    FOREACH (RefMap, it, refsShaMap)
+        {
+            const Reference& rf = *it;
 
-	FOREACH (RefMap, it, refsShaMap) {
+            if ((any || type == TAG) && rf.tags.contains(refName))
+                return it.key();
+            else if ((any || type == BRANCH) && rf.branches.contains(refName))
+                return it.key();
+            else if ((any || type == RMT_BRANCH) && rf.remoteBranches.contains(refName))
+                return it.key();
+            else if ((any || type == REF) && rf.refs.contains(refName))
+                return it.key();
+            else if ((any || type == APPLIED || type == UN_APPLIED) && rf.stgitPatch == refName)
+                return it.key();
+        }
+    if (!askGit)
+        return "";
 
-	        const Reference& rf = *it;
-
-		if ((any || type == TAG) && rf.tags.contains(refName))
-			return it.key();
-
-		else if ((any || type == BRANCH) && rf.branches.contains(refName))
-			return it.key();
-
-		else if ((any || type == RMT_BRANCH) && rf.remoteBranches.contains(refName))
-			return it.key();
-
-		else if ((any || type == REF) && rf.refs.contains(refName))
-			return it.key();
-
-		else if ((any || type == APPLIED || type == UN_APPLIED) && rf.stgitPatch == refName)
-			return it.key();
-	}
-	if (!askGit)
-		return "";
-
-	// if a ref was not found perhaps is an abbreviated form
-	QString runOutput;
-	errorReportingEnabled = false;
-	bool ok = run("git rev-parse --revs-only " + refName, &runOutput);
-	errorReportingEnabled = true;
-	return (ok ? runOutput.trimmed() : "");
+    // if a ref was not found perhaps is an abbreviated form
+    QString runOutput;
+    errorReportingEnabled = false;
+    bool ok = run("git rev-parse --revs-only " + refName, &runOutput);
+    errorReportingEnabled = true;
+    return (ok ? runOutput.trimmed() : "");
 }
 
 void Git::appendNamesWithId(QStringList& names, SCRef sha, SCList data, bool onlyLoaded) {
@@ -728,26 +726,26 @@ const Rev* Git::revLookup(SCRef sha, const FileHistory* fh) const {
 	return revLookup(toTempSha(sha), fh);
 }
 
-const Rev* Git::revLookup(const ShaString& sha, const FileHistory* fh) const {
-
-	const RevMap& r = (fh ? fh->revs : revData->revs);
-	return (sha.latin1() ? r.value(sha) : NULL);
+const Rev* Git::revLookup(const ShaString& sha, const FileHistory* fh) const
+{
+    const RevMap& r = (fh ? fh->revs : revData->revs);
+    return (sha.latin1() ? r.value(sha) : NULL);
 }
 
 bool Git::run(SCRef runCmd, QString* runOutput, QObject* receiver, SCRef buf) {
 
-	QByteArray ba;
-	bool ret = run(runOutput ? &ba : NULL, runCmd, receiver, buf);
-	if (runOutput)
-		*runOutput = ba;
+    QByteArray ba;
+    bool ret = run(runOutput ? &ba : NULL, runCmd, receiver, buf);
+    if (runOutput)
+        *runOutput = ba;
 
-	return ret;
+    return ret;
 }
 
-bool Git::run(QByteArray* runOutput, SCRef runCmd, QObject* receiver, SCRef buf) {
-
-	MyProcess p(parent(), this, workDir, errorReportingEnabled);
-	return p.runSync(runCmd, runOutput, receiver, buf);
+bool Git::run(QByteArray* runOutput, SCRef runCmd, QObject* receiver, SCRef buf)
+{
+    MyProcess p(parent(), this, workDir, errorReportingEnabled);
+    return p.runSync(runCmd, runOutput, receiver, buf);
 }
 
 MyProcess* Git::runAsync(SCRef runCmd, QObject* receiver, SCRef buf) {
@@ -1484,32 +1482,32 @@ const QString Git::getNewestFileName(SCList branches, SCRef fileName) {
 	return curFileName;
 }
 
-void Git::getFileFilter(SCRef path, ShaSet& shaSet) const {
-
-	shaSet.clear();
-	QRegExp rx(path, Qt::CaseInsensitive, QRegExp::Wildcard);
-	FOREACH (ShaVect, it, revData->revOrder) {
-
-		if (!revsFiles.contains(*it))
-			continue;
-
-		// case insensitive, wildcard search
-		const RevFile* rf = revsFiles[*it];
-		for (int i = 0; i < rf->count(); ++i)
-			if (filePath(*rf, i).contains(rx)) {
-				shaSet.insert(*it);
-				break;
-			}
-	}
+void Git::getFileFilter(SCRef path, ShaSet& shaSet) const
+{
+    shaSet.clear();
+    QRegExp rx(path, Qt::CaseInsensitive, QRegExp::Wildcard);
+    for(const auto & it : revData->revOrder)
+        {
+            if (!revsFiles.contains(it))
+                continue;
+            // case insensitive, wildcard search
+            const RevFile* rf = revsFiles[it];
+            for (int i = 0; i < rf->count(); ++i)
+                if (filePath(*rf, i).contains(rx))
+                    {
+                        shaSet.insert(it);
+                        break;
+                    }
+        }
 }
 
 bool Git::getPatchFilter(SCRef exp, bool isRegExp, ShaSet& shaSet) {
 
 	shaSet.clear();
 	QString buf;
-	FOREACH (ShaVect, it, revData->revOrder)
-		if (*it != ZERO_SHA_RAW)
-			buf.append(*it).append('\n');
+    for(const auto & it : revData->revOrder)
+        if (it != ZERO_SHA_RAW)
+            buf.append(it).append('\n');
 
 	if (buf.isEmpty())
 		return true;

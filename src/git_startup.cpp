@@ -869,30 +869,33 @@ void Git::loadFileCache() {
 	}
 }
 
-void Git::loadFileNames() {
-
+void Git::loadFileNames()
+{
 	indexTree(); // we are sure data loading is finished at this point
 
 	int revCnt = 0;
 	QString diffTreeBuf;
-	FOREACH (ShaVect, it, revData->revOrder) {
+    for(const auto & it : revData->revOrder)
+        {
+            if (!revsFiles.contains(it))
+                {
+                    const Rev* c = revLookup(it);
+                    if (c->parentsCount() == 1)
+                        { // skip initials and merges
+                            diffTreeBuf.append(it).append('\n');
+                            revCnt++;
+                        }
+                }
+        }
+    if (!diffTreeBuf.isEmpty())
+        {
+            filesLoadingPending = filesLoadingCurSha = "";
+            filesLoadingStartOfs = revsFiles.count();
+            emit fileNamesLoad(3, revCnt);
 
-		if (!revsFiles.contains(*it)) {
-			const Rev* c = revLookup(*it);
-			if (c->parentsCount() == 1) { // skip initials and merges
-				diffTreeBuf.append(*it).append('\n');
-				revCnt++;
-			}
-		}
-	}
-	if (!diffTreeBuf.isEmpty()) {
-		filesLoadingPending = filesLoadingCurSha = "";
-		filesLoadingStartOfs = revsFiles.count();
-		emit fileNamesLoad(3, revCnt);
-
-		const QString runCmd("git diff-tree --no-color -r -C --stdin");
-		runAsync(runCmd, this, diffTreeBuf);
-	}
+            const QString runCmd("git diff-tree --no-color -r -C --stdin");
+            runAsync(runCmd, this, diffTreeBuf);
+        }
 }
 
 bool Git::filterEarlyOutputRev(FileHistory* fh, Rev* rev) {

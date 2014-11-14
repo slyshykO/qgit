@@ -116,12 +116,13 @@ const QString TreeView::fullName(QTreeWidgetItem* item) {
 
 void TreeView::getTreeSelectedItems(QStringList& selectedItems) {
 
-	selectedItems.clear();
-	QList<QTreeWidgetItem*> ls = QTreeWidget::selectedItems();
-	FOREACH (QList<QTreeWidgetItem*>, it, ls) {
-		FileItem* f = static_cast<FileItem*>(*it);
-		selectedItems.append(f->fullName());
-	}
+    selectedItems.clear();
+    QList<QTreeWidgetItem*> ls = QTreeWidget::selectedItems();
+    for(const auto &it: ls)
+        {
+            FileItem* f = static_cast<FileItem*>(it);
+            selectedItems.append(f->fullName());
+        }
 }
 
 void TreeView::setTree(SCRef treeSha) {

@@ -93,15 +93,16 @@ void SettingsImpl::userInfo() {
 	}
 	bool found = false;
 	int idx = 0;
-    FOREACH (QStringList, it, _uInfo) {
-        comboBoxUserSrc->addItem(*it);
-		++it;
-        if (!found && !(*it).isEmpty())
-			found = true;
-		if (!found)
-			idx++;
-		++it;
-	}
+    FOREACH (QStringList, it, _uInfo)
+        {
+            comboBoxUserSrc->addItem(*it);
+            ++it;
+            if (!found && !(*it).isEmpty())
+                found = true;
+            if (!found)
+                idx++;
+            ++it;
+        }
 	if (!found)
 		idx = 0;
 
@@ -132,27 +133,27 @@ void SettingsImpl::readGitConfig(const QString& source) {
     QStringList options(git->getGitConfigList(source == "Global"));    
     options.sort();
 
-    FOREACH (QStringList, it, options) {
+    FOREACH (QStringList, it, options)
+        {
+            QStringList paths = it->split("=").at(0).split(".");
+            QString value = it->split("=").at(1);
 
-        QStringList paths = it->split("=").at(0).split(".");
-        QString value = it->split("=").at(1);
+            if (paths.isEmpty() || value.isEmpty()) {
+                dbp("SettingsImpl::readGitConfig Unable to parse line %1", *it);
+                continue;
+            }
+            QString name(paths.first());
+            paths.removeFirst();
+            QList<QTreeWidgetItem*> items = treeWidgetGitConfig->findItems(name, Qt::MatchExactly);
+            QTreeWidgetItem* item;
 
-        if (paths.isEmpty() || value.isEmpty()) {
-            dbp("SettingsImpl::readGitConfig Unable to parse line %1", *it);
-            continue;
+            if (items.isEmpty())
+                item = new QTreeWidgetItem(treeWidgetGitConfig, QStringList(name));
+            else
+                item = items.first();
+
+            addConfigOption(item, paths, value);
         }
-        QString name(paths.first());
-        paths.removeFirst();
-        QList<QTreeWidgetItem*> items = treeWidgetGitConfig->findItems(name, Qt::MatchExactly);
-        QTreeWidgetItem* item;
-
-        if (items.isEmpty())
-            item = new QTreeWidgetItem(treeWidgetGitConfig, QStringList(name));
-        else
-            item = items.first();
-
-        addConfigOption(item, paths, value);
-    }
     populatingGitConfig = false;
 }
 
