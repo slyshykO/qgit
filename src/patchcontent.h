@@ -17,7 +17,8 @@ class Git;
 class MyProcess;
 class StateInfo;
 
-class DiffHighlighter : public QSyntaxHighlighter {
+class DiffHighlighter : public QSyntaxHighlighter
+{
 public:
 	DiffHighlighter(QTextEdit* p) : QSyntaxHighlighter(p), cl(0) {}
 	void setCombinedLength(uint c) { cl = c; }
@@ -26,8 +27,9 @@ private:
 	uint cl;
 };
 
-class PatchContent: public QTextEdit {
-Q_OBJECT
+class PatchContent: public QTextEdit
+{
+    Q_OBJECT
 public:
 	PatchContent(QWidget* parent);
 	void setup(Domain* parent, Git* git);
