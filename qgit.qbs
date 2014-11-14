@@ -32,10 +32,23 @@ QtGuiApplication{
         files:["*.h","*.cpp", "*.ui"]
     }
 
+    cpp.commonCompilerFlags: {
+        var flags = base;
+        if(cpp.compilerName.contains("g++"))
+            flags = flags.concat(["-fdata-sections","-ffunction-sections","-flto"])
+        return flags
+    }
     cpp.cxxFlags:{
         var flags = base
         if(cpp.compilerName.contains("g++"))
-            flags = flags.concat(["-std=gnu++11"])
+            flags = flags.concat(["-std=gnu++11","-flto"])
+        return flags
+    }
+    cpp.linkerFlags:{
+        var flags = base
+        if(cpp.compilerName.contains("g++")){
+            flags = flags.concat(["-Wl,--gc-sections","-flto"])
+        }
         return flags
     }
 
