@@ -496,7 +496,7 @@ bool QGit::startProcess(QProcess* proc, SCList args, SCRef buf, bool* winShell)
     env << "GIT_FLUSH=0"; // skip the fflush() in 'git log'
     proc->setEnvironment(env);
 
-    proc->start(prog, arguments); // TODO test QIODevice::Unbuffered
+    proc->start(prog, arguments); //TODO: test QIODevice::Unbuffered
     return proc->waitForStarted();
 }
 

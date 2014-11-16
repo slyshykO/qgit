@@ -688,7 +688,7 @@ void Git::formatPatchFileHeader(QString* rowName, SCRef sha, SCRef diffToSha,
                                 bool combined, bool allMergeFiles) {
 	if (combined) {
 		rowName->prepend("diff --combined ");
-		return; // TODO rename/copy still not supported in this case
+        return; //TODO: rename/copy still not supported in this case
 	}
 	// let's see if it's a rename/copy...
 	addExtraFileInfo(rowName, sha, diffToSha, allMergeFiles);
@@ -876,7 +876,7 @@ MyProcess* Git::getDiff(SCRef sha, QObject* receiver, SCRef diffToSha, bool comb
 	QString runCmd;
 	if (sha != ZERO_SHA) {
 		runCmd = "git diff-tree --no-color -r --patch-with-stat ";
-		runCmd.append(combined ? "-c " : "-C -m "); // TODO rename for combined
+        runCmd.append(combined ? "-c " : "-C -m "); //TODO: rename for combined
 		runCmd.append(diffToSha + " " + sha); // diffToSha could be empty
 	} else
 		runCmd = "git diff-index --no-color -r -m --patch-with-stat HEAD";

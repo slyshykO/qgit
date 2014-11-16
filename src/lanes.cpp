@@ -182,7 +182,7 @@ void Lanes::setInitial() {
 void Lanes::setApplied() {
 
 	// applied patches are not merges, nor forks
-	typeVec[activeLane] = APPLIED; // TODO test with boundaries
+    typeVec[activeLane] = APPLIED; //TODO: test with boundaries
 }
 
 void Lanes::changeActiveLane(const QString& sha) {
@@ -250,12 +250,12 @@ bool Lanes::isBranch() {
 
 void Lanes::afterBranch() {
 
-	typeVec[activeLane] = ACTIVE; // TODO test with boundaries
+    typeVec[activeLane] = ACTIVE; //TODO: test with boundaries
 }
 
 void Lanes::afterApplied() {
 
-	typeVec[activeLane] = ACTIVE; // TODO test with boundaries
+    typeVec[activeLane] = ACTIVE; //TODO: test with boundaries
 }
 
 void Lanes::nextParent(const QString& sha) {

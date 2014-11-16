@@ -519,8 +519,8 @@ bool Git::startRevList(SCList args, FileHistory* fh) {
 	return startParseProc(initCmd + args, fh, QString());
 }
 
-bool Git::startUnappliedList() {
-
+bool Git::startUnappliedList()
+{
 	QStringList unAppliedShaList(getAllRefSha(UN_APPLIED));
 	if (unAppliedShaList.isEmpty())
 		return false;
@@ -539,7 +539,8 @@ bool Git::startUnappliedList() {
 	return startParseProc(sl, revData, QString());
 }
 
-void Git::stop(bool saveCache) {
+void Git::stop(bool saveCache)
+{
 // normally called when changing directory or closing
 
 	EM_RAISE(exGitStopped);
@@ -550,35 +551,36 @@ void Git::stop(bool saveCache) {
 	emit cancelAllProcesses(); // non blocking
 
 	// after cancelAllProcesses() procFinished() is not called anymore
-	// TODO perhaps is better to call procFinished() also if process terminated
+    //TODO: perhaps is better to call procFinished() also if process terminated
 	// incorrectly as QProcess does. BUt first we need to fix FileView::on_loadCompleted()
 	emit fileNamesLoad(1, revsFiles.count() - filesLoadingStartOfs);
 
-	if (cacheNeedsUpdate && saveCache) {
+    if (cacheNeedsUpdate && saveCache)
+        {
+            cacheNeedsUpdate = false;
+            if (!filesLoadingCurSha.isEmpty()) // we are in the middle of a loading
+                revsFiles.remove(toTempSha(filesLoadingCurSha)); // remove partial data
 
-		cacheNeedsUpdate = false;
-		if (!filesLoadingCurSha.isEmpty()) // we are in the middle of a loading
-			revsFiles.remove(toTempSha(filesLoadingCurSha)); // remove partial data
-
-		if (!revsFiles.isEmpty()) {
-			SHOW_MSG("Saving cache. Please wait...");
-			if (!Cache::save(gitDir, revsFiles, dirNamesVec, fileNamesVec))
-				dbs("ERROR unable to save file names cache");
-		}
-	}
+            if (!revsFiles.isEmpty())
+                {
+                    SHOW_MSG("Saving cache. Please wait...");
+                    if (!Cache::save(gitDir, revsFiles, dirNamesVec, fileNamesVec))
+                        dbs("ERROR unable to save file names cache");
+                }
+        }
 }
 
-void Git::clearRevs() {
-
+void Git::clearRevs()
+{
 	revData->clear();
-	patchesStillToFind = 0; // TODO TEST WITH FILTERING
+    patchesStillToFind = 0; //TODO: TEST WITH FILTERING
 	firstNonStGitPatch = "";
 	workingDirInfo.clear();
 	revsFiles.remove(ZERO_SHA_RAW);
 }
 
-void Git::clearFileNames() {
-
+void Git::clearFileNames()
+{
 	qDeleteAll(revsFiles);
 	revsFiles.clear();
 	fileNamesMap.clear();
@@ -589,7 +591,8 @@ void Git::clearFileNames() {
 	cacheNeedsUpdate = false;
 }
 
-bool Git::init(SCRef wd, bool askForRange, const QStringList* passedArgs, bool overwriteArgs, bool* quit) {
+bool Git::init(SCRef wd, bool askForRange, const QStringList* passedArgs, bool overwriteArgs, bool* quit)
+{
 // normally called when changing git directory. Must be called after stop()
 
 	*quit = false;
@@ -606,7 +609,8 @@ bool Git::init(SCRef wd, bool askForRange, const QStringList* passedArgs, bool o
 	if (overwriteArgs) // in this case must be passedArgs != NULL
 		loadArguments.args = *passedArgs;
 
-	try {
+    try
+    {
 		setThrowOnStop(true);
 
 		const QString msg1("Path is '" + workDir + "'    Loading ");
@@ -615,65 +619,71 @@ bool Git::init(SCRef wd, bool askForRange, const QStringList* passedArgs, bool o
 		bool repoChanged;
 		workDir = getBaseDir(&repoChanged, wd, &isGIT, &gitDir);
 
-		if (repoChanged) {
-			localDates.clear();
-			clearFileNames();
-			fileCacheAccessed = false;
+        if (repoChanged)
+            {
+                localDates.clear();
+                clearFileNames();
+                fileCacheAccessed = false;
 
-			SHOW_MSG(msg1 + "file names cache...");
-			loadFileCache();
-			SHOW_MSG("");
-		}
-		if (!isGIT) {
-			setThrowOnStop(false);
-			return false;
-		}
-		if (!passedArgs) {
+                SHOW_MSG(msg1 + "file names cache...");
+                loadFileCache();
+                SHOW_MSG("");
+            }
+        if (!isGIT)
+            {
+                setThrowOnStop(false);
+                return false;
+            }
+        if (!passedArgs)
+            {
+                // update text codec according to repo settings
+                //bool dummy;
+                //QTextCodec::setCodecForCStrings(getTextCodec(&dummy));
 
-			// update text codec according to repo settings
-            //bool dummy;
-            //QTextCodec::setCodecForCStrings(getTextCodec(&dummy));
+                // load references
+                SHOW_MSG(msg1 + "refs...");
+                if (!getRefs())
+                    dbs("WARNING: no tags or heads found");
 
-			// load references
-			SHOW_MSG(msg1 + "refs...");
-			if (!getRefs())
-				dbs("WARNING: no tags or heads found");
+                // startup input range dialog
+                SHOW_MSG("");
+                if (startup || askForRange)
+                    {
+                        loadArguments.args = getArgs(quit, repoChanged); // must be called with refs loaded
+                        if (*quit)
+                            {
+                                setThrowOnStop(false);
+                                return false;
+                            }
+                    }
+                // load StGit unapplied patches, must be after getRefs()
+                if (isStGIT)
+                    {
+                        loadingUnAppliedPatches = startUnappliedList();
+                        if (loadingUnAppliedPatches)
+                            {
+                                SHOW_MSG(msg1 + "StGIT unapplied patches...");
+                                setThrowOnStop(false);
 
-			// startup input range dialog
-			SHOW_MSG("");
-			if (startup || askForRange) {
-				loadArguments.args = getArgs(quit, repoChanged); // must be called with refs loaded
-				if (*quit) {
-					setThrowOnStop(false);
-					return false;
-				}
-			}
-			// load StGit unapplied patches, must be after getRefs()
-			if (isStGIT) {
-				loadingUnAppliedPatches = startUnappliedList();
-				if (loadingUnAppliedPatches) {
-
-					SHOW_MSG(msg1 + "StGIT unapplied patches...");
-					setThrowOnStop(false);
-
-					// we will continue with init2() at
-					// the end of loading...
-					return true;
-				}
-			}
-		}
+                                // we will continue with init2() at
+                                // the end of loading...
+                                return true;
+                            }
+                    }
+            }
 		init2();
 		setThrowOnStop(false);
 		return true;
 
-	} catch (int i) {
-
+    }
+    catch (int i)
+    {
 		setThrowOnStop(false);
-
-		if (isThrowOnStopRaised(i, "initializing 1")) {
-			EM_THROW_PENDING;
-			return false;
-		}
+        if (isThrowOnStopRaised(i, "initializing 1"))
+            {
+                EM_THROW_PENDING;
+                return false;
+            }
 		const QString info("Exception \'" + EM_DESC(i) + "\' "
 		                   "not handled in init...re-throw");
 		dbs(info);
@@ -690,37 +700,43 @@ void Git::init2() {
 	if (isStGIT)
 		revData->earlyOutputCntBase = revData->revOrder.count();
 
-	try {
+    try
+    {
 		setThrowOnStop(true);
 
 		// load working dir files
-		if (!loadArguments.filteredLoading && testFlag(DIFF_INDEX_F)) {
-			SHOW_MSG(msg1 + "working directory changed files...");
-			getDiffIndex(); // blocking, we could be in setRepository() now
-		}
+        if (!loadArguments.filteredLoading && testFlag(DIFF_INDEX_F))
+            {
+                SHOW_MSG(msg1 + "working directory changed files...");
+                getDiffIndex(); // blocking, we could be in setRepository() now
+            }
 		SHOW_MSG(msg1 + "revisions...");
 
 		// build up command line arguments
 		QStringList args(loadArguments.args);
-		if (loadArguments.filteredLoading) {
-			if (!args.contains("--"))
-				args << "--";
+        if (loadArguments.filteredLoading)
+            {
+                if (!args.contains("--"))
+                    args << "--";
 
-			args << loadArguments.filterList;
-		}
+                args << loadArguments.filterList;
+            }
 		if (!startRevList(args, revData))
 			SHOW_MSG("ERROR: unable to start 'git log'");
 
 		setThrowOnStop(false);
 
-	} catch (int i) {
+    }
+    catch (int i)
+    {
 
 		setThrowOnStop(false);
 
-		if (isThrowOnStopRaised(i, "initializing 2")) {
-			EM_THROW_PENDING;
-			return;
-		}
+        if (isThrowOnStopRaised(i, "initializing 2"))
+            {
+                EM_THROW_PENDING;
+                return;
+            }
 		const QString info("Exception \'" + EM_DESC(i) + "\' "
 		                   "not handled in init2...re-throw");
 		dbs(info);
@@ -728,51 +744,53 @@ void Git::init2() {
 	}
 }
 
-void Git::on_newDataReady(const FileHistory* fh) {
-
+void Git::on_newDataReady(const FileHistory* fh)
+{
 	emit newRevsAdded(fh , fh->revOrder);
 }
 
 void Git::on_loaded(FileHistory* fh, ulong byteSize, int loadTime,
-                    bool normalExit, SCRef cmd, SCRef errorDesc) {
+                    bool normalExit, SCRef cmd, SCRef errorDesc)
+{
+    if (!errorDesc.isEmpty())
+        {
+            MainExecErrorEvent* e = new MainExecErrorEvent(cmd, errorDesc);
+            QApplication::postEvent(parent(), e);
+        }
+    if (normalExit)
+        { // do not send anything if killed
+            on_newDataReady(fh);
 
-	if (!errorDesc.isEmpty()) {
-		MainExecErrorEvent* e = new MainExecErrorEvent(cmd, errorDesc);
-		QApplication::postEvent(parent(), e);
-	}
-	if (normalExit) { // do not send anything if killed
+            if (!loadingUnAppliedPatches)
+                {
+                    fh->loadTime += loadTime;
 
-		on_newDataReady(fh);
+                    uint kb = byteSize / 1024;
+                    float mbs = (float)byteSize / fh->loadTime / 1000;
+                    QString tmp;
+                    tmp.sprintf("Loaded %i revisions  (%i KB),   "
+                                "time elapsed: %i ms  (%.2f MB/s)",
+                                fh->revs.count(), kb, fh->loadTime, mbs);
 
-		if (!loadingUnAppliedPatches) {
+                    if (!tryFollowRenames(fh))
+                        emit loadCompleted(fh, tmp);
 
-			fh->loadTime += loadTime;
-
-			uint kb = byteSize / 1024;
-			float mbs = (float)byteSize / fh->loadTime / 1000;
-			QString tmp;
-			tmp.sprintf("Loaded %i revisions  (%i KB),   "
-			            "time elapsed: %i ms  (%.2f MB/s)",
-			            fh->revs.count(), kb, fh->loadTime, mbs);
-
-			if (!tryFollowRenames(fh))
-				emit loadCompleted(fh, tmp);
-
-			if (isMainHistory(fh))
-				// wait the dust to settle down before to start
-				// background file names loading for new revisions
-				QTimer::singleShot(500, this, SLOT(loadFileNames()));
-		}
-	}
-	if (loadingUnAppliedPatches) {
-		loadingUnAppliedPatches = false;
-		revData->lns->clear(); // again to reset lanes
-		init2(); // continue with loading of remaining revisions
-	}
+                    if (isMainHistory(fh))
+                        // wait the dust to settle down before to start
+                        // background file names loading for new revisions
+                        QTimer::singleShot(500, this, SLOT(loadFileNames()));
+                }
+        }
+    if (loadingUnAppliedPatches)
+        {
+            loadingUnAppliedPatches = false;
+            revData->lns->clear(); // again to reset lanes
+            init2(); // continue with loading of remaining revisions
+        }
 }
 
-bool Git::tryFollowRenames(FileHistory* fh) {
-
+bool Git::tryFollowRenames(FileHistory* fh)
+{
 	if (isMainHistory(fh))
 		return false;
 
@@ -794,25 +812,28 @@ bool Git::tryFollowRenames(FileHistory* fh) {
 }
 
 bool Git::populateRenamedPatches(SCRef renamedSha, SCList newNames, FileHistory* fh,
-                                 QStringList* oldNames, bool backTrack) {
-
+                                 QStringList* oldNames, bool backTrack)
+{
 	QString runOutput;
 	if (!run("git diff-tree -r -M " + renamedSha, &runOutput))
 		return false;
 
 	// find the first renamed file with the new file name in renamedFiles list
 	QString line;
-    foreach (const QString& it, newNames) {
-		if (backTrack) {
-            line = runOutput.section('\t' + it + '\t', 0, 0,
-			                         QString::SectionIncludeTrailingSep);
-			line.chop(1);
-		} else
-            line = runOutput.section('\t' + it + '\n', 0, 0);
+    foreach (const QString& it, newNames)
+        {
+            if (backTrack)
+                {
+                    line = runOutput.section('\t' + it + '\t', 0, 0,
+                                             QString::SectionIncludeTrailingSep);
+                    line.chop(1);
+                }
+            else
+                line = runOutput.section('\t' + it + '\n', 0, 0);
 
-		if (!line.isEmpty())
-			break;
-	}
+            if (!line.isEmpty())
+                break;
+        }
 	if (line.contains('\n'))
 		line = line.section('\n', -1, -1);
 
@@ -820,11 +841,12 @@ bool Git::populateRenamedPatches(SCRef renamedSha, SCList newNames, FileHistory*
 	if (!status.startsWith('R'))
 		return false;
 
-	if (backTrack) {
-		SCRef nextFile = runOutput.section(line, 1, 1).section('\t', 1, 1);
-		oldNames->append(nextFile.section('\n', 0, 0));
-		return true;
-	}
+    if (backTrack)
+        {
+            SCRef nextFile = runOutput.section(line, 1, 1).section('\t', 1, 1);
+            oldNames->append(nextFile.section('\n', 0, 0));
+            return true;
+        }
 	// get the diff betwen two files
 	SCRef prevFileSha = line.section(' ', 2, 2);
 	SCRef lastFileSha = line.section(' ', 3, 3);
@@ -839,10 +861,11 @@ bool Git::populateRenamedPatches(SCRef renamedSha, SCList newNames, FileHistory*
 
 	// save the patch, will be used later to create a
 	// proper graft sha with correct parent info
-	if (fh) {
-		QString tmp(!runOutput.isEmpty() ? runOutput : "diff --\nsimilarity index 100%\n");
-		fh->renamedPatches.insert(renamedSha, tmp);
-	}
+    if (fh)
+        {
+            QString tmp(!runOutput.isEmpty() ? runOutput : "diff --\nsimilarity index 100%\n");
+            fh->renamedPatches.insert(renamedSha, tmp);
+        }
 	return true;
 }
 

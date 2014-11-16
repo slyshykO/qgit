@@ -87,7 +87,7 @@ private:
 	int annNumLen;
 	int annId;
 	int annFilesNum;
-	ShaVect histRevOrder; // TODO use reference
+    ShaVect histRevOrder; //TODO: use reference
 	bool valid;
 	bool canceled;
 	QTime processingTime;

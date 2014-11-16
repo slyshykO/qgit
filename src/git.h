@@ -88,7 +88,7 @@ struct Reference
     QString     currentBranch;
     QStringList tags;
     QStringList refs;
-    QString     tagObj; // TODO support more then one obj
+    QString     tagObj; //TODO: support more then one obj
     QString     tagMsg;
     QString     stgitPatch;
 };

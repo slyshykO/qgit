@@ -21,7 +21,8 @@ class FileHistory;
 class Git;
 class MainImpl;
 
-class UpdateDomainEvent : public QEvent {
+class UpdateDomainEvent : public QEvent
+{
 public:
 	explicit UpdateDomainEvent(bool fromMaster, bool force = false)
 	: QEvent(fromMaster ? (QEvent::Type)QGit::UPD_DM_MST_EV
@@ -31,7 +32,8 @@ private:
 	bool f;
 };
 
-class StateInfo {
+class StateInfo
+{
 public:
 	StateInfo() { clear(); }
 	StateInfo& operator=(const StateInfo& newState);
@@ -66,20 +68,24 @@ private:
 	bool requestPending() const { return (!nextS.sha.isEmpty() && (nextS != curS)); }
 	void setLock(bool b) { isLocked = b; if (b) nextS = curS; }
 	void commit() { prevS = curS; }
-	void rollBack() {
+    void rollBack()
+    {
 		if (nextS == curS)
 			nextS.clear(); // invalidate to avoid infinite loop
 		curS = prevS;
 	}
-	bool flushQueue() {
-		if (requestPending()) {
-			curS = nextS;
-			return true;
-		}
+    bool flushQueue()
+    {
+        if (requestPending())
+            {
+                curS = nextS;
+                return true;
+            }
 		return false;
 	}
 
-	class S {
+    class S
+    {
 	public:
 		S() { clear(); }
 		void clear();

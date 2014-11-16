@@ -123,7 +123,7 @@ void FileView::clear(bool complete)
     fileTab->textEditFile->clearAll(); // emits file/ann available signals
 
     fileTab->toolButtonPin->setEnabled(false);
-    fileTab->toolButtonPin->setChecked(false); // TODO signals pressed() and clicked() are not emitted
+    fileTab->toolButtonPin->setChecked(false); //TODO: signals pressed() and clicked() are not emitted
     fileTab->spinBoxRevision->setEnabled(false);
     fileTab->spinBoxRevision->setValue(fileTab->spinBoxRevision->minimum()); // clears the box
 }
