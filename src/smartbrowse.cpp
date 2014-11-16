@@ -20,12 +20,15 @@
 #define AT_TOP 1
 #define AT_BTM 2
 
-SmartLabel::SmartLabel(const QString& text, QWidget* par) : QLabel(text, par) {
+SmartLabel::SmartLabel(const QString& text, QWidget* par) :
+    QLabel(text, par)
+{
 	this->setStyleSheet("SmartLabel { border: 1px solid LightGray;"
 	                                 "padding: 0px 2px 2px 2px; }");
 }
 
-void SmartLabel::paintEvent(QPaintEvent* event) {
+void SmartLabel::paintEvent(QPaintEvent* event)
+{
 	// our QPainter must be destroyed before QLabel's paintEvent is called
 	{
 		QPainter painter(this);
@@ -40,8 +43,8 @@ void SmartLabel::paintEvent(QPaintEvent* event) {
 	QLabel::paintEvent(event);
 }
 
-void SmartLabel::contextMenuEvent(QContextMenuEvent* e) {
-
+void SmartLabel::contextMenuEvent(QContextMenuEvent* e)
+{
 	if (text().count("href=") != 2)
 		return;
 
@@ -51,8 +54,8 @@ void SmartLabel::contextMenuEvent(QContextMenuEvent* e) {
 	delete menu;
 }
 
-void SmartLabel::switchLinks() {
-
+void SmartLabel::switchLinks()
+{
 	QString t(text());
 	QString link1(t.section("<a href=", 1). section("</a>", 0, 0));
 	QString link2(t.section("<a href=", 2). section("</a>", 0, 0));
@@ -61,8 +64,9 @@ void SmartLabel::switchLinks() {
 	adjustSize();
 }
 
-SmartBrowse::SmartBrowse(RevsView* par) : QObject(par) {
-
+SmartBrowse::SmartBrowse(RevsView* par) :
+    QObject(par)
+{
 	rv = par;
 	wheelCnt = 0;
 	lablesEnabled = QGit::testFlag(QGit::SMART_LBL_F);
@@ -127,8 +131,8 @@ void SmartBrowse::setVisible(bool b) {
 	diffBottomLbl->setVisible(b);
 }
 
-QTextEdit* SmartBrowse::curTextEdit(bool* isDiff) {
-
+QTextEdit* SmartBrowse::curTextEdit(bool* isDiff)
+{
 	QTextEdit* log = static_cast<QTextEdit*>(rv->tab()->textBrowserDesc);
 	QTextEdit* diff = static_cast<QTextEdit*>(rv->tab()->textEditDiff);
 
@@ -141,8 +145,8 @@ QTextEdit* SmartBrowse::curTextEdit(bool* isDiff) {
 	return (diff->isVisible() ? diff : log);
 }
 
-int SmartBrowse::visibilityFlags(bool* isDiff) {
-
+int SmartBrowse::visibilityFlags(bool* isDiff)
+{
 	static int MIN = 5;
 
 	QTextEdit* te = curTextEdit(isDiff);
@@ -158,48 +162,53 @@ int SmartBrowse::visibilityFlags(bool* isDiff) {
 	return AT_TOP * top + AT_BTM * btm;
 }
 
-void SmartBrowse::updateVisibility() {
-
+void SmartBrowse::updateVisibility()
+{
 	bool isDiff;
 	int flags = visibilityFlags(&isDiff);
 
-	if (isDiff) {
-		diffTopLbl->setVisible(flags & AT_TOP);
-		diffBottomLbl->setVisible(flags & AT_BTM);
-	} else {
-		logTopLbl->setVisible(flags & AT_TOP);
-		logBottomLbl->setVisible(flags & AT_BTM);
-	}
+    if (isDiff)
+        {
+            diffTopLbl->setVisible(flags & AT_TOP);
+            diffBottomLbl->setVisible(flags & AT_BTM);
+        }
+    else
+        {
+            logTopLbl->setVisible(flags & AT_TOP);
+            logBottomLbl->setVisible(flags & AT_BTM);
+        }
 }
 
-void SmartBrowse::flagChanged(uint flag) {
-
-	if (flag == QGit::SMART_LBL_F && curTextEdit()) {
-		lablesEnabled = QGit::testFlag(QGit::SMART_LBL_F);
-		setVisible(curTextEdit()->isEnabled());
-		updatePosition();
-	}
+void SmartBrowse::flagChanged(uint flag)
+{
+    if (flag == QGit::SMART_LBL_F && curTextEdit())
+        {
+            lablesEnabled = QGit::testFlag(QGit::SMART_LBL_F);
+            setVisible(curTextEdit()->isEnabled());
+            updatePosition();
+        }
 	if (flag == QGit::LOG_DIFF_TAB_F)
 		rv->setTabLogDiffVisible(QGit::testFlag(QGit::LOG_DIFF_TAB_F));
 }
 
-void SmartBrowse::linkActivated(const QString& text) {
-
-	int key = text.toInt();
-	switch (key) {
-	case GO_LOG:
-	case GO_DIFF:
-		rv->toggleDiffView();
-		break;
-	case GO_UP:
-		rv->tab()->listViewLog->on_keyUp();
-		break;
-	case GO_DOWN:
-		rv->tab()->listViewLog->on_keyDown();
-		break;
-	default:
-		dbp("ASSERT in SmartBrowse::linkActivated, key %1 not known", text);
-	}
+void SmartBrowse::linkActivated(const QString& text)
+{
+    int key = text.toInt();
+    switch (key)
+        {
+        case GO_LOG:
+        case GO_DIFF:
+            rv->toggleDiffView();
+            break;
+        case GO_UP:
+            rv->tab()->listViewLog->on_keyUp();
+            break;
+        case GO_DOWN:
+            rv->tab()->listViewLog->on_keyDown();
+            break;
+        default:
+            dbp("ASSERT in SmartBrowse::linkActivated, key %1 not known", text);
+        }
 }
 
 bool SmartBrowse::eventFilter(QObject *obj, QEvent *event) {

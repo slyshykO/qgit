@@ -64,10 +64,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QStackedWidget" name="stackedPanes">
-       <property name="currentIndex">
-        <number>0</number>
-       </property>
+
        <widget class="QTabWidget" name="tabLogDiff">
         <property name="tabPosition">
          <enum>QTabWidget::North</enum>
@@ -76,7 +73,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="Log">
          <attribute name="title">
@@ -153,7 +150,7 @@
          </layout>
         </widget>
        </widget>
-      </widget>
+
      </widget>
     </widget>
    </item>

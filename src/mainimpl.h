@@ -215,7 +215,6 @@ private:
                 d.remove(filenames[1]);
             }
     }
-
 };
 
 #endif

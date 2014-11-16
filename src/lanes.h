@@ -25,7 +25,8 @@ class QStringList;
 //
 
 
-class Lanes {
+class Lanes
+{
 public:
 	Lanes() {} // init() will setup us later, when data is available
 	bool isEmpty() { return typeVec.empty(); }

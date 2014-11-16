@@ -7,7 +7,7 @@
 #ifndef REVSVIEW_H
 #define REVSVIEW_H
 
-#include <QPointer>
+#include <QScopedPointer>
 #include "ui_revsview.h" // needed by moc_* file to understand tab() function
 #include "common.h"
 #include "domain.h"
@@ -27,7 +27,7 @@ public:
 	void viewPatch(bool newTab);
 	void setEnabled(bool b);
 	void setTabLogDiffVisible(bool);
-	Ui_TabRev* tab() { return revTab; }
+    Ui_TabRev* tab() { return revTab.data(); }
 
 public slots:
 	void toggleDiffView();
@@ -46,8 +46,8 @@ private:
 
 	void updateLineEditSHA(bool clear = false);
 
-	Ui_TabRev* revTab;
-	QPointer<PatchView> linkedPatchView;
+    QScopedPointer<Ui_TabRev> revTab;
+    QScopedPointer<PatchView,QScopedPointerDeleteLater> linkedPatchView;
 };
 
 #endif

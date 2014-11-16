@@ -18,8 +18,9 @@ class Domain;
 class FileHistory;
 class ListViewProxy;
 
-class ListView: public QTreeView {
-Q_OBJECT
+class ListView: public QTreeView
+{
+    Q_OBJECT
 public:
 	ListView(QWidget* parent);
 	~ListView();

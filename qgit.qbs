@@ -46,7 +46,7 @@ QtGuiApplication{
     }
     cpp.linkerFlags:{
         var flags = base
-        if(cpp.compilerName.contains("g++")){
+        if(cpp.compilerName.contains("g++") && (qbs.buildVariant == "debug")){
             flags = flags.concat(["-Wl,--gc-sections","-flto"])
         }
         return flags

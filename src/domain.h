@@ -99,8 +99,9 @@ private:
 	bool isLocked;
 };
 
-class Domain: public QObject {
-Q_OBJECT
+class Domain: public QObject
+{
+    Q_OBJECT
 public:
 	Domain() {}
 	Domain(MainImpl* m, Git* git, bool isMain);

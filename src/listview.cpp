@@ -21,8 +21,8 @@ using namespace QGit;
 
 ListView::ListView(QWidget* parent) : QTreeView(parent), d(NULL), git(NULL), fh(NULL), lp(NULL) {}
 
-void ListView::setup(Domain* dm, Git* g) {
-
+void ListView::setup(Domain* dm, Git* g)
+{
 	d = dm;
 	git = g;
 	fh = d->model();
@@ -100,8 +100,8 @@ void ListView::setupGeometry() {
 		hideColumn(ANN_ID_COL);
 }
 
-void ListView::scrollToNextHighlighted(int direction) {
-
+void ListView::scrollToNextHighlighted(int direction)
+{
 	// Depending on the value of direction, scroll to:
 	// -1 = the next highlighted item above the current one (i.e. newer in history)
 	//  1 = the next highlighted item below the current one (i.e. older in history)

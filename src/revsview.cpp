@@ -20,13 +20,14 @@
 #include "mainimpl.h"
 #include "revsview.h"
 
-RevsView::RevsView(MainImpl* mi, Git* g, bool isMain
-                   ) : Domain(mi, g, isMain)
+RevsView::RevsView(MainImpl* mi, Git* g, bool isMain) :
+    Domain(mi, g, isMain)
 {
-    revTab = new Ui_TabRev();
+
+    revTab.reset(new Ui_TabRev());
     revTab->setupUi(container);
 
-    tab()->listViewLog->setup(this, g);
+    tab()->listViewLog->setup(this, git);
     tab()->textBrowserDesc->setup(this);
     tab()->textEditDiff->setup(this, git);
     tab()->fileList->setup(this, git);
@@ -98,9 +99,6 @@ RevsView::~RevsView()
     // SmartBrowse::eventFilter()
     delete tab()->textBrowserDesc;
     delete tab()->textEditDiff;
-
-    delete linkedPatchView;
-    delete revTab;
 }
 
 void RevsView::clear(bool complete)
@@ -125,7 +123,7 @@ void RevsView::setEnabled(bool b)
 
 void RevsView::toggleDiffView()
 {
-    QStackedWidget* s = tab()->stackedPanes;
+   /* QStackedWidget* s = tab()->stackedPanes;
     QTabWidget* t = tab()->tabLogDiff;
 
     bool isTabPage = (s->currentIndex() == 0);
@@ -139,37 +137,15 @@ void RevsView::toggleDiffView()
     else
         s->setCurrentIndex(3 - idx);
 
-    container->setUpdatesEnabled(old);
+    container->setUpdatesEnabled(old); */
 }
 
 void RevsView::setTabLogDiffVisible(bool b)
 {
-    QStackedWidget* s = tab()->stackedPanes;
     QTabWidget* t = tab()->tabLogDiff;
 
-    bool isTabPage = (s->currentIndex() == 0);
-    int idx = (isTabPage ? t->currentIndex() : s->currentIndex());
-
     container->setUpdatesEnabled(false);
-
-    if (b && !isTabPage)
-        {
-            t->addTab(tab()->textBrowserDesc, "Log");
-            t->addTab(tab()->textEditDiff, "Diff");
-
-            t->setCurrentIndex(idx - 1);
-            s->setCurrentIndex(0);
-        }
-    if (!b && isTabPage)
-        {
-            s->addWidget(tab()->textBrowserDesc);
-            s->addWidget(tab()->textEditDiff);
-
-            // manually remove the two remaining empty pages
-            t->removeTab(0); t->removeTab(0);
-
-            s->setCurrentIndex(idx + 1);
-        }
+    t->setVisible(b);
     container->setUpdatesEnabled(true);
 }
 
@@ -186,8 +162,8 @@ void RevsView::viewPatch(bool newTab)
 
     if (!newTab)   // linkedPatchView == NULL
         {
-            linkedPatchView = pv;
-            linkDomain(linkedPatchView);
+            linkedPatchView.reset(pv);
+            linkDomain(linkedPatchView.data());
 
             connect(m(), SIGNAL(highlightPatch(const QString &, bool)),
                     pv->tab()->textEditDiff, SLOT(on_highlightPatch(const QString &, bool)));
@@ -292,7 +268,7 @@ bool RevsView::doUpdate(bool force)
             if (linkedPatchView)
                 {
                     linkedPatchView->st = st;
-                    UPDATE_DM_MASTER(linkedPatchView, force); // async call
+                    UPDATE_DM_MASTER(linkedPatchView.data(), force); // async call
                 }
         }
     return (found || st.sha().isEmpty());

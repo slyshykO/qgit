@@ -13,8 +13,8 @@
 #include "patchcontent.h"
 #include "patchview.h"
 
-PatchView::PatchView(MainImpl* mi, Git* g
-                     ) : Domain(mi, g, false)
+PatchView::PatchView(MainImpl* mi, Git* g ) :
+    Domain(mi, g, false)
 {
     patchTab = new Ui_TabPatch();
     patchTab->setupUi(container);
@@ -76,13 +76,11 @@ void PatchView::buttonFilterPatch_clicked()
         {
             pc->curFilter = PatchContent::VIEW_ADDED;
             ic = QString::fromUtf8(":/icons/resources/plusonly.png");
-
         }
     else if (pc->curFilter == PatchContent::VIEW_ADDED)
         {
             pc->curFilter = PatchContent::VIEW_REMOVED;
             ic = QString::fromUtf8(":/icons/resources/minusonly.png");
-
         }
     else if (pc->curFilter == PatchContent::VIEW_REMOVED)
         {
@@ -187,7 +185,6 @@ bool PatchView::doUpdate(bool force)
 
     if (st.isChanged(StateInfo::ANY & ~StateInfo::FILE_NAME) || force)
         {
-
             updatePatch();
             patchTab->fileList->clear();
             files = git->getFiles(st.sha(), st.diffToSha(), st.allMergeFiles());

@@ -163,16 +163,10 @@ MainImpl::MainImpl(SCRef cd, QWidget* p) : QMainWindow(p)
     // use most recent repo as startup dir if it exists and user opted to do so
     QStringList recents(settings.value(REC_REP_KEY).toStringList());
     QDir checkRepo;
-    if (    recents.size() >= 1
-         && testFlag(REOPEN_REPO_F, FLAGS_KEY)
-         && checkRepo.exists(recents.at(0)))
-        {
-            startUpDir = recents.at(0);
-        }
+    if ( recents.size() >= 1 && testFlag(REOPEN_REPO_F, FLAGS_KEY) && checkRepo.exists(recents.at(0)))
+        startUpDir = recents.at(0);
     else
-        {
-            startUpDir = (cd.isEmpty() ? QDir::current().absolutePath() : cd);
-        }
+        startUpDir = (cd.isEmpty() ? QDir::current().absolutePath() : cd);
 
     // MainImpl c'tor is called before to enter event loop,
     // but some stuff requires event loop to init properly
@@ -1343,13 +1337,14 @@ void MainImpl::ActSplitView_activated() {
 	}
 }
 
-void MainImpl::ActToggleLogsDiff_activated() {
-
+void MainImpl::ActToggleLogsDiff_activated()
+{
 	Domain* t;
-	if (currentTabType(&t) == TAB_REV) {
-		RevsView* rv = static_cast<RevsView*>(t);
-		rv->toggleDiffView();
-	}
+    if (currentTabType(&t) == TAB_REV)
+        {
+            RevsView* rv = static_cast<RevsView*>(t);
+            rv->toggleDiffView();
+        }
 }
 
 const QString MainImpl::getRevisionDesc(SCRef sha) {
