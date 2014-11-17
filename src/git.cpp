@@ -53,8 +53,9 @@ Git::Git(QObject* p) :
     fileCacheAccessed = cacheNeedsUpdate = isMergeHead = false;
     isStGIT = isGIT = loadingUnAppliedPatches = isTextHighlighterFound = false;
     errorReportingEnabled = true; // report errors if run() fails
-    curDomain = NULL;
-    revData = NULL;
+    curDomain = nullptr;
+    revData   = nullptr;
+    mainImpl  = nullptr;
     revsFiles.reserve(MAX_DICT_SIZE);
 }
 
@@ -74,8 +75,12 @@ void Git::checkEnvironment()
                     const QString errorDesc("Your installed git is too old."
                           "\nPlease upgrade to avoid possible misbehaviours.");
 
-                    MainExecErrorEvent* e = new MainExecErrorEvent(cmd, errorDesc);
-                    QApplication::postEvent(m(), e);
+                    if(m())
+                        {
+                            MainExecErrorEvent* e = new MainExecErrorEvent(cmd, errorDesc);
+                            QApplication::postEvent(m(), e);
+                        }
+
                 }
         }
     else
@@ -1210,7 +1215,8 @@ const QString Git::getNewestFileName(SCList branches, SCRef fileName) {
 			break;
 
 		QString msg("Retrieving file renames, now at '" + curFileName + "'...");
-        QApplication::postEvent(m(), new MessageEvent(msg));
+        if(m())
+            QApplication::postEvent(m(), new MessageEvent(msg));
 		EM_PROCESS_EVENTS_NO_INPUT;
 
 		if (!run("git rev-list -n1 " + args, &runOutput))

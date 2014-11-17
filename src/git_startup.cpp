@@ -21,7 +21,7 @@
 #include "git.h"
 #include "filehistory.hpp"
 
-#define SHOW_MSG(x) QApplication::postEvent(m(), new MessageEvent(x)); EM_PROCESS_EVENTS_NO_INPUT;
+#define SHOW_MSG(x) if(m()) {QApplication::postEvent(m(), new MessageEvent(x)); EM_PROCESS_EVENTS_NO_INPUT;}
 
 using namespace QGit;
 
@@ -755,7 +755,7 @@ void Git::on_newDataReady(const FileHistory* fh)
 void Git::on_loaded(FileHistory* fh, ulong byteSize, int loadTime,
                     bool normalExit, SCRef cmd, SCRef errorDesc)
 {
-    if (!errorDesc.isEmpty())
+    if (!errorDesc.isEmpty() && m())
         {
             MainExecErrorEvent* e = new MainExecErrorEvent(cmd, errorDesc);
             QApplication::postEvent(m(), e);
