@@ -29,7 +29,7 @@ QtGuiApplication{
     Group{
         name:"src"
         prefix:"src/"
-        files:["*.h","*.cpp", "*.ui"]
+        files:["*.h","*.hpp","*.cpp", "*.ui"]
     }
 
     cpp.commonCompilerFlags: {

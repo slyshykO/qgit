@@ -10,6 +10,7 @@
 #include "exceptionmanager.h"
 #include "mainimpl.h"
 #include "git.h"
+#include "filehistory.hpp"
 #include "domain.h"
 
 using namespace QGit;
@@ -127,7 +128,8 @@ void Domain::clear(bool complete)
 
 void Domain::on_closeAllTabs()
 {
-    delete this; // must be sync, deleteLater() does not work
+    //delete this; // must be sync, deleteLater() does not work
+    this->deleteLater();
 }
 
 void Domain::deleteWhenDone()

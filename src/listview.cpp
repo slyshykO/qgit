@@ -15,6 +15,7 @@
 #include <QMimeData>
 #include "domain.h"
 #include "git.h"
+#include "filehistory.hpp"
 #include "listview.h"
 
 using namespace QGit;
