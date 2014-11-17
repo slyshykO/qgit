@@ -24,111 +24,120 @@ using namespace QGit;
 
 QString CommitImpl::lastMsgBeforeError;
 
-CommitImpl::CommitImpl(Git* g, bool amend) : git(g) {
+CommitImpl::CommitImpl(GitSharedPtr g, bool amend) : git(g)
+{
+    // adjust GUI
+    setAttribute(Qt::WA_DeleteOnClose);
+    setupUi(this);
+    textEditMsg->setFont(TYPE_WRITER_FONT);
 
-	// adjust GUI
-	setAttribute(Qt::WA_DeleteOnClose);
-	setupUi(this);
-	textEditMsg->setFont(TYPE_WRITER_FONT);
+    QVector<QSplitter*> v(1, splitter);
+    QGit::restoreGeometrySetting(CMT_GEOM_KEY, this, &v);
 
-	QVector<QSplitter*> v(1, splitter);
-	QGit::restoreGeometrySetting(CMT_GEOM_KEY, this, &v);
+    QSettings settings;
+    QString templ(settings.value(CMT_TEMPL_KEY, CMT_TEMPL_DEF).toString());
+    QString msg;
+    QDir d;
+    if (d.exists(templ))
+        readFromFile(templ, msg);
 
-	QSettings settings;
-	QString templ(settings.value(CMT_TEMPL_KEY, CMT_TEMPL_DEF).toString());
-	QString msg;
-	QDir d;
-	if (d.exists(templ))
-		readFromFile(templ, msg);
+    // set-up files list
+    const RevFile* f = git->getFiles(ZERO_SHA);
+    for (int i = 0; f && i < f->count(); ++i)
+        { // in case of amend f could be null
+            bool inIndex = f->statusCmp(i, RevFile::IN_INDEX);
+            bool isNew   = (f->statusCmp(i, RevFile::NEW) || f->statusCmp(i, RevFile::UNKNOWN));
+            QColor myColor = Qt::black;
+            if (isNew)
+                myColor = Qt::darkGreen;
+            else if (f->statusCmp(i, RevFile::DELETED))
+                myColor = Qt::red;
 
-	// set-up files list
-	const RevFile* f = git->getFiles(ZERO_SHA);
-	for (int i = 0; f && i < f->count(); ++i) { // in case of amend f could be null
+            QTreeWidgetItem* item = new QTreeWidgetItem(treeWidgetFiles);
+            item->setText(0, git->filePath(*f, i));
+            item->setText(1, inIndex ? "Updated in index" : "Not updated in index");
+            item->setCheckState(0, inIndex || !isNew ? Qt::Checked : Qt::Unchecked);
+            item->setForeground(0, myColor);
+        }
+    treeWidgetFiles->resizeColumnToContents(0);
 
-		bool inIndex = f->statusCmp(i, RevFile::IN_INDEX);
-		bool isNew = (f->statusCmp(i, RevFile::NEW) || f->statusCmp(i, RevFile::UNKNOWN));
-		QColor myColor = Qt::black;
-		if (isNew)
-			myColor = Qt::darkGreen;
-		else if (f->statusCmp(i, RevFile::DELETED))
-			myColor = Qt::red;
+    // compute cursor offsets. Take advantage of fixed width font
+    textEditMsg->setPlainText("\nx\nx"); // cursor doesn't move on empty text
+    textEditMsg->moveCursor(QTextCursor::Start);
+    textEditMsg->verticalScrollBar()->setValue(0);
+    textEditMsg->horizontalScrollBar()->setValue(0);
+    int y0 = textEditMsg->cursorRect().y();
+    int x0 = textEditMsg->cursorRect().x();
+    textEditMsg->moveCursor(QTextCursor::Down);
+    textEditMsg->moveCursor(QTextCursor::Right);
+    textEditMsg->verticalScrollBar()->setValue(0);
+    int y1 = textEditMsg->cursorRect().y();
+    int x1 = textEditMsg->cursorRect().x();
+    ofsX = x1 - x0;
+    ofsY = y1 - y0;
+    textEditMsg->moveCursor(QTextCursor::Start);
+    textEditMsg_cursorPositionChanged();
 
-		QTreeWidgetItem* item = new QTreeWidgetItem(treeWidgetFiles);
-		item->setText(0, git->filePath(*f, i));
-		item->setText(1, inIndex ? "Updated in index" : "Not updated in index");
-		item->setCheckState(0, inIndex || !isNew ? Qt::Checked : Qt::Unchecked);
-		item->setForeground(0, myColor);
-	}
-	treeWidgetFiles->resizeColumnToContents(0);
+    if (lastMsgBeforeError.isEmpty())
+        {
+            // setup textEditMsg with old commit message to be amended
+            QString status("");
+            if (amend)
+                status = git->getLastCommitMsg();
 
-	// compute cursor offsets. Take advantage of fixed width font
-	textEditMsg->setPlainText("\nx\nx"); // cursor doesn't move on empty text
-	textEditMsg->moveCursor(QTextCursor::Start);
-	textEditMsg->verticalScrollBar()->setValue(0);
-	textEditMsg->horizontalScrollBar()->setValue(0);
-	int y0 = textEditMsg->cursorRect().y();
-	int x0 = textEditMsg->cursorRect().x();
-	textEditMsg->moveCursor(QTextCursor::Down);
-	textEditMsg->moveCursor(QTextCursor::Right);
-	textEditMsg->verticalScrollBar()->setValue(0);
-	int y1 = textEditMsg->cursorRect().y();
-	int x1 = textEditMsg->cursorRect().x();
-	ofsX = x1 - x0;
-	ofsY = y1 - y0;
-	textEditMsg->moveCursor(QTextCursor::Start);
-	textEditMsg_cursorPositionChanged();
+            // setup textEditMsg with default value if user opted to do so (default)
+            if (testFlag(USE_CMT_MSG_F, FLAGS_KEY))
+                status += git->getNewCommitMsg();
 
-	if (lastMsgBeforeError.isEmpty()) {
-		// setup textEditMsg with old commit message to be amended
-		QString status("");
-		if (amend)
-			status = git->getLastCommitMsg();
+            // prepend commit msg with template if available
+            if (!amend)
+                status.prepend('\n').replace(QRegExp("\\n([^#])"), "\n#\\1"); // comment all the lines
 
-		// setup textEditMsg with default value if user opted to do so (default)
-		if (testFlag(USE_CMT_MSG_F, FLAGS_KEY))
-			status += git->getNewCommitMsg();
+            msg = status.trimmed();
+        }
+    else
+        msg = lastMsgBeforeError;
 
-		// prepend commit msg with template if available
-		if (!amend)
-			status.prepend('\n').replace(QRegExp("\\n([^#])"), "\n#\\1"); // comment all the lines
+    textEditMsg->setPlainText(msg);
+    textEditMsg->setFocus();
 
-		msg = status.trimmed();
-	} else
-		msg = lastMsgBeforeError;
+    // if message is not changed we avoid calling refresh
+    // to change patch name in stgCommit()
+    origMsg = msg;
 
-	textEditMsg->setPlainText(msg);
-	textEditMsg->setFocus();
-
-	// if message is not changed we avoid calling refresh
-	// to change patch name in stgCommit()
-	origMsg = msg;
-
-	// setup button functions
-	if (amend) {
-		if (git->isStGITStack()) {
-			pushButtonOk->setText("&Add to top");
-			pushButtonOk->setShortcut(QKeySequence("Alt+A"));
-			pushButtonOk->setToolTip("Refresh top stack patch");
-		} else {
-			pushButtonOk->setText("&Amend");
-			pushButtonOk->setShortcut(QKeySequence("Alt+A"));
-			pushButtonOk->setToolTip("Amend latest commit");
-		}
-		connect(pushButtonOk, SIGNAL(clicked()),
-			this, SLOT(pushButtonAmend_clicked()));
-	} else {
-		if (git->isStGITStack()) {
-			pushButtonOk->setText("&New patch");
-			pushButtonOk->setShortcut(QKeySequence("Alt+N"));
-			pushButtonOk->setToolTip("Create a new patch");
-		}
-		connect(pushButtonOk, SIGNAL(clicked()),
-			this, SLOT(pushButtonCommit_clicked()));
-	}
-	connect(treeWidgetFiles, SIGNAL(customContextMenuRequested(const QPoint&)),
-	        this, SLOT(contextMenuPopup(const QPoint&)));
-	connect(textEditMsg, SIGNAL(cursorPositionChanged()),
-	        this, SLOT(textEditMsg_cursorPositionChanged()));
+    // setup button functions
+    if (amend)
+        {
+            if (git->isStGITStack())
+                {
+                    pushButtonOk->setText("&Add to top");
+                    pushButtonOk->setShortcut(QKeySequence("Alt+A"));
+                    pushButtonOk->setToolTip("Refresh top stack patch");
+                }
+            else
+                {
+                    pushButtonOk->setText("&Amend");
+                    pushButtonOk->setShortcut(QKeySequence("Alt+A"));
+                    pushButtonOk->setToolTip("Amend latest commit");
+                }
+            connect(pushButtonOk, SIGNAL(clicked()),
+                    this, SLOT(pushButtonAmend_clicked()));
+        }
+    else
+        {
+            if (git->isStGITStack())
+                {
+                    pushButtonOk->setText("&New patch");
+                    pushButtonOk->setShortcut(QKeySequence("Alt+N"));
+                    pushButtonOk->setToolTip("Create a new patch");
+                }
+            connect(pushButtonOk, SIGNAL(clicked()),
+                    this, SLOT(pushButtonCommit_clicked()));
+        }
+    connect(treeWidgetFiles, SIGNAL(customContextMenuRequested(const QPoint&)),
+            this, SLOT(contextMenuPopup(const QPoint&)));
+    connect(textEditMsg, SIGNAL(cursorPositionChanged()),
+            this, SLOT(textEditMsg_cursorPositionChanged()));
 }
 
 void CommitImpl::closeEvent(QCloseEvent*) {

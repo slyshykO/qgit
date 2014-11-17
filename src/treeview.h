@@ -46,7 +46,7 @@ class TreeView : public QTreeWidget
     Q_OBJECT
 public:
 	TreeView(QWidget* par) : QTreeWidget(par), d(NULL), git(NULL), treeIsValid(false) {}
-	void setup(Domain* d, Git* g);
+	void setup(Domain* d, GitSharedPtr g);
 	void setTreeName(SCRef treeName) { rootName = treeName; }
 	void updateTree();
 	const QString fullName(QTreeWidgetItem* item);
@@ -76,7 +76,7 @@ private:
 	void restoreStuff();
 
 	Domain* d;
-	Git* git;
+	GitSharedPtr git;
 	StateInfo* st;
 	QString rootName;
 	QStringList modifiedFiles; // no need a map, should not be a lot

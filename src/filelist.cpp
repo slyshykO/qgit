@@ -15,7 +15,7 @@ FileList::FileList(QWidget* p) : QListWidget(p), d(NULL), git(NULL), st(NULL)
 {
 }
 
-void FileList::setup(Domain* dm, Git* g)
+void FileList::setup(Domain* dm, GitSharedPtr g)
 {
 
     d = dm;

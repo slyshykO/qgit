@@ -19,7 +19,7 @@ class FileView: public Domain {
 Q_OBJECT
 public:
 	FileView() {}
-	FileView(MainImpl* m, Git* git);
+	FileView(MainImpl* m, GitSharedPtr git);
 	~FileView();
 	virtual void clear(bool complete = true);
 	void append(SCRef data);

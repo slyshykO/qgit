@@ -67,37 +67,37 @@ FileContent::~FileContent() {
 	delete rangeInfo;
 }
 
-void FileContent::setup(Domain* dm, Git* g, QListWidget* lw) {
+void FileContent::setup(Domain* dm, GitSharedPtr g, QListWidget* lw)
+{
+    d = dm;
+    git = g;
+    st = &(d->st);
 
-	d = dm;
-	git = g;
-	st = &(d->st);
+    listWidgetAnn = lw;
+    lw->setParent(this);
+    lw->setSelectionMode(QAbstractItemView::NoSelection);
+    QPalette pl = lw->palette();
+    pl.setColor(QPalette::Text, Qt::lightGray);
+    lw->setPalette(pl);
 
-	listWidgetAnn = lw;
-	lw->setParent(this);
-	lw->setSelectionMode(QAbstractItemView::NoSelection);
-	QPalette pl = lw->palette();
-	pl.setColor(QPalette::Text, Qt::lightGray);
-	lw->setPalette(pl);
+    clearAll(!optEmitSignal);
 
-	clearAll(!optEmitSignal);
+    connect(d->m(), SIGNAL(typeWriterFontChanged()),
+            this, SLOT(typeWriterFontChanged()));
 
-	connect(d->m(), SIGNAL(typeWriterFontChanged()),
-	        this, SLOT(typeWriterFontChanged()));
+    connect(git.data(), SIGNAL(annotateReady(Annotate*, bool, const QString&)),
+            this, SLOT(on_annotateReady(Annotate*, bool, const QString&)));
 
-	connect(git, SIGNAL(annotateReady(Annotate*, bool, const QString&)),
-	        this, SLOT(on_annotateReady(Annotate*, bool, const QString&)));
+    connect(listWidgetAnn, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+            this, SLOT(on_list_doubleClicked(QListWidgetItem*)));
 
-	connect(listWidgetAnn, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-	        this, SLOT(on_list_doubleClicked(QListWidgetItem*)));
+    QScrollBar* vsb = verticalScrollBar();
+    connect(vsb, SIGNAL(valueChanged(int)),
+            this, SLOT(on_scrollBar_valueChanged(int)));
 
-	QScrollBar* vsb = verticalScrollBar();
-	connect(vsb, SIGNAL(valueChanged(int)),
-	        this, SLOT(on_scrollBar_valueChanged(int)));
-
-	vsb = listWidgetAnn->verticalScrollBar();
-	connect(vsb, SIGNAL(valueChanged(int)),
-	        this, SLOT(on_listScrollBar_valueChanged(int)));
+    vsb = listWidgetAnn->verticalScrollBar();
+    connect(vsb, SIGNAL(valueChanged(int)),
+            this, SLOT(on_listScrollBar_valueChanged(int)));
 }
 
 void FileContent::on_scrollBar_valueChanged(int value) {

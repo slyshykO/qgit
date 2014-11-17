@@ -17,7 +17,7 @@ class PatchView :public Domain
     Q_OBJECT
 public:
     PatchView() {}
-    PatchView(MainImpl* mi, Git* g);
+    PatchView(MainImpl* mi, GitSharedPtr g);
     ~PatchView();
     void clear(bool complete = true);
     Ui_TabPatch* tab() { return patchTab; }

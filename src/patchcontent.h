@@ -32,7 +32,7 @@ class PatchContent: public QTextEdit
     Q_OBJECT
 public:
 	PatchContent(QWidget* parent);
-	void setup(Domain* parent, Git* git);
+	void setup(Domain* parent, GitSharedPtr git);
 	void clear();
 	void centerOnFileHeader(StateInfo& st);
 	void refresh();
@@ -66,7 +66,7 @@ private:
 	bool centerTarget(SCRef target);
 	void processData(const QByteArray& data, int* prevLineNum = NULL);
 
-	Git* git;
+	GitSharedPtr git;
 	DiffHighlighter* diffHighlighter;
 	QPointer<MyProcess> proc;
 	bool diffLoaded;

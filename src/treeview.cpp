@@ -37,7 +37,7 @@ void FileItem::setBold(bool b) {
 DirItem::DirItem(DirItem* p, SCRef ts, SCRef nm) : FileItem(p, nm), treeSha(ts) {}
 DirItem::DirItem(QTreeWidget* p, SCRef ts, SCRef nm) : FileItem(p, nm), treeSha(ts) {}
 
-void TreeView::setup(Domain* dm, Git* g) {
+void TreeView::setup(Domain* dm, GitSharedPtr g) {
 
 	d = dm;
 	git = g;

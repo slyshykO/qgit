@@ -13,7 +13,7 @@
 #include "patchcontent.h"
 #include "patchview.h"
 
-PatchView::PatchView(MainImpl* mi, Git* g ) :
+PatchView::PatchView(MainImpl* mi, GitSharedPtr g ) :
     Domain(mi, g, false)
 {
     patchTab = new Ui_TabPatch();

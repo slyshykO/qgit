@@ -21,7 +21,7 @@ class RevsView : public Domain
 {
     Q_OBJECT
 public:
-	RevsView(MainImpl* parent, Git* git, bool isMain = false);
+	RevsView(MainImpl* parent, GitSharedPtr git, bool isMain = false);
 	~RevsView();
 	void clear(bool complete);
 	void viewPatch(bool newTab);

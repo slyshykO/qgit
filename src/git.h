@@ -27,7 +27,7 @@ class Git : public QObject
 {
     Q_OBJECT
 public:
-    explicit Git(QObject* parent);
+    explicit Git(QObject* parent = 0);
 
     // used as self-documenting boolean parameters
     static const bool optFalse       = false;

@@ -43,57 +43,61 @@ const QString Git::getLocalDate(SCRef gitDate) {
 	return localDate;
 }
 
-const QStringList Git::getArgs(bool* quit, bool repoChanged) {
+const QStringList Git::getArgs(bool* quit, bool repoChanged)
+{
+    QString args = "--all";
+    if (startup)
+        {
+            for (int i = 1; i < qApp->arguments().size(); i++)
+                {
+                    // in arguments with spaces double quotes
+                    // are stripped by Qt, so re-add them
+                    QString arg(qApp->arguments()[i]);
+                    if (arg.contains(' '))
+                        arg.prepend('\"').append('\"');
 
-	QString args = "--all";
-	if (startup) {
-        for (int i = 1; i < qApp->arguments().size(); i++) {
-			// in arguments with spaces double quotes
-			// are stripped by Qt, so re-add them
-            QString arg(qApp->arguments()[i]);
-			if (arg.contains(' '))
-				arg.prepend('\"').append('\"');
-
-			args.append(arg + ' ');
-		}
-	}
-	if (testFlag(RANGE_SELECT_F) && (!startup || args.isEmpty())) {
-
-		RangeSelectImpl rs((QWidget*)parent(), &args, repoChanged, this);
-		*quit = (rs.exec() == QDialog::Rejected); // modal execution
-		if (*quit)
-			return QStringList();
-	}
-	startup = false;
-	return MyProcess::splitArgList(args);
+                    args.append(arg + ' ');
+                }
+        }
+    if (testFlag(RANGE_SELECT_F) && (!startup || args.isEmpty()))
+        {
+            RangeSelectImpl rs((QWidget*)parent(), &args, repoChanged, GitSharedPtr(this,[](Git*){;}));
+            *quit = (rs.exec() == QDialog::Rejected); // modal execution
+            if (*quit)
+                return QStringList();
+        }
+    startup = false;
+    return MyProcess::splitArgList(args);
 }
 
-const QString Git::getBaseDir(bool* changed, SCRef wd, bool* ok, QString* gd) {
+const QString Git::getBaseDir(bool* changed, SCRef wd, bool* ok, QString* gd)
+{
 // we could run from a subdirectory, so we need to get correct directories
 
-	QString runOutput, tmp(workDir);
-	workDir = wd;
-	errorReportingEnabled = false;
-	bool ret = run("git rev-parse --git-dir", &runOutput); // run under newWorkDir
-	errorReportingEnabled = true;
-	workDir = tmp;
-	runOutput = runOutput.trimmed();
-	if (!ret || runOutput.isEmpty()) {
-		*changed = true;
-		if (ok)
-			*ok = false;
-		return wd;
-	}
-	// 'git rev-parse --git-dir' output could be a relative
-	// to working dir (as ex .git) or an absolute path
-	QDir d(runOutput.startsWith("/") ? runOutput : wd + "/" + runOutput);
-	*changed = (d.absolutePath() != gitDir);
-	if (gd)
-		*gd = d.absolutePath();
-	if (ok)
-		*ok = true;
-	d.cdUp();
-	return d.absolutePath();
+    QString runOutput, tmp(workDir);
+    workDir = wd;
+    errorReportingEnabled = false;
+    bool ret = run("git rev-parse --git-dir", &runOutput); // run under newWorkDir
+    errorReportingEnabled = true;
+    workDir = tmp;
+    runOutput = runOutput.trimmed();
+    if (!ret || runOutput.isEmpty())
+        {
+            *changed = true;
+            if (ok)
+                *ok = false;
+            return wd;
+        }
+    // 'git rev-parse --git-dir' output could be a relative
+    // to working dir (as ex .git) or an absolute path
+    QDir d(runOutput.startsWith("/") ? runOutput : wd + "/" + runOutput);
+    *changed = (d.absolutePath() != gitDir);
+    if (gd)
+        *gd = d.absolutePath();
+    if (ok)
+        *ok = true;
+    d.cdUp();
+    return d.absolutePath();
 }
 
 Reference* Git::lookupReference(const ShaString& sha, bool create) {

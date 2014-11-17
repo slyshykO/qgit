@@ -13,16 +13,16 @@
 #include "git.h"
 #include "consoleimpl.h"
 
-ConsoleImpl::ConsoleImpl(const QString& nm, Git* g) : git(g), actionName(nm) {
-
-	setAttribute(Qt::WA_DeleteOnClose);
-	setupUi(this);
-	textEditOutput->setFont(QGit::TYPE_WRITER_FONT);
-	QFont f = textLabelCmd->font();
-	f.setBold(true);
-	textLabelCmd->setFont(f);
-	setWindowTitle("\'" + actionName + "\' output window - QGit");
-	QGit::restoreGeometrySetting(QGit::CON_GEOM_KEY, this);
+ConsoleImpl::ConsoleImpl(const QString& nm, GitSharedPtr g) : git(g), actionName(nm)
+{
+    setAttribute(Qt::WA_DeleteOnClose);
+    setupUi(this);
+    textEditOutput->setFont(QGit::TYPE_WRITER_FONT);
+    QFont f = textLabelCmd->font();
+    f.setBold(true);
+    textLabelCmd->setFont(f);
+    setWindowTitle("\'" + actionName + "\' output window - QGit");
+    QGit::restoreGeometrySetting(QGit::CON_GEOM_KEY, this);
 }
 
 void ConsoleImpl::typeWriterFontChanged() {

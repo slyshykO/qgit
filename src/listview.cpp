@@ -25,7 +25,7 @@ ListView::ListView(QWidget* parent) :
 {
 }
 
-void ListView::setup(Domain* dm, Git* g)
+void ListView::setup(Domain* dm, GitSharedPtr g)
 {
     d = dm;
     git = g;
@@ -409,7 +409,7 @@ bool ListView::getLaneParentsChilds(SCRef sha, int x, SList p, SList c)
 
 // *****************************************************************************
 
-ListViewDelegate::ListViewDelegate(Git* g, ListViewProxy* px, QObject* p)
+ListViewDelegate::ListViewDelegate(GitSharedPtr g, ListViewProxy* px, QObject* p)
     : QItemDelegate(p)
 {
     git = g;
@@ -837,8 +837,8 @@ void ListViewDelegate::addTextPixmap(QPixmap** pp, SCRef txt, const QStyleOption
 
 // *****************************************************************************
 
-ListViewProxy::ListViewProxy(QObject* p, Domain * dm, Git * g
-                             ) : QSortFilterProxyModel(p)
+ListViewProxy::ListViewProxy(QObject* p, Domain * dm, GitSharedPtr g) :
+    QSortFilterProxyModel(p)
 {
     d = dm;
     git = g;

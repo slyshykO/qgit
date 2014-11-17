@@ -18,7 +18,7 @@ class FileList: public QListWidget
     Q_OBJECT
 public:
 	FileList(QWidget* parent);
-	void setup(Domain* dm, Git* g);
+	void setup(Domain* dm, GitSharedPtr g);
 	void update(const RevFile* files, bool newFiles);
 	void addItem(const QString& label, const QColor& clr);
 	QString currentText();
@@ -43,7 +43,7 @@ private:
 	void insertFiles(const RevFile* files);
 
 	Domain* d;
-	Git* git;
+	GitSharedPtr git;
 	StateInfo* st;
 	QString dragFileName;
 };

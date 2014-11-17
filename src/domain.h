@@ -110,7 +110,7 @@ class Domain: public QObject
     Q_OBJECT
 public:
 	Domain() {}
-	Domain(MainImpl* m, Git* git, bool isMain);
+	Domain(MainImpl* m, GitSharedPtr git, bool isMain);
 	virtual ~Domain();
 	void deleteWhenDone(); // will delete when no more run() are pending
 	void showStatusBarMessage(const QString& msg, int timeout = 0);
@@ -150,7 +150,7 @@ protected:
 	void unlinkDomain(Domain* d);
 	void setTabCaption(const QString& caption);
 
-	Git* git;
+	GitSharedPtr git;
 	QWidget* container;
 	bool busy;
 

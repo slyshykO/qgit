@@ -17,7 +17,7 @@
 
 #define MAX_LINE_NUM 5
 
-FileView::FileView(MainImpl* mi, Git* g) :
+FileView::FileView(MainImpl* mi, GitSharedPtr g) :
     Domain(mi, g, false)
 {
 
@@ -37,7 +37,7 @@ FileView::FileView(MainImpl* mi, Git* g) :
 
     fileTab->listWidgetAnn->installEventFilter(this);
 
-    connect(git, SIGNAL(loadCompleted(const FileHistory*, const QString &)),
+    connect(git.data(), SIGNAL(loadCompleted(const FileHistory*, const QString &)),
             this, SLOT(on_loadCompleted(const FileHistory*, const QString &)));
 
     connect(m(), SIGNAL(changeFont(const QFont &)),

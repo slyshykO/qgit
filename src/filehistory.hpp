@@ -18,7 +18,7 @@ class FileHistory : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    FileHistory(QObject* parent, Git* git);
+    FileHistory(QObject* parent, GitSharedPtr git);
     ~FileHistory();
     void clear(bool complete = true);
     const QString sha(int row) const;
@@ -52,7 +52,7 @@ private:
     void flushTail();
     const QString timeDiff(unsigned long secs) const;
 
-    Git* git;
+    GitSharedPtr git;
     RevMap revs;
     ShaVect revOrder;
     Lanes* lns;

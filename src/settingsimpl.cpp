@@ -38,8 +38,8 @@ static const char* en[] = { "Latin1", "Big5 -- Chinese", "EUC-JP -- Japanese",
 
 using namespace QGit;
 
-SettingsImpl::SettingsImpl(QWidget* p, Git* g, int defTab
-                           ) : QDialog(p), git(g)
+SettingsImpl::SettingsImpl(QWidget* p, GitSharedPtr g, int defTab) :
+    QDialog(p), git(g)
 {
     setupUi(this);
     int f = flags(FLAGS_KEY);

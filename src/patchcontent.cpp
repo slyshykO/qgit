@@ -106,7 +106,7 @@ PatchContent::PatchContent(QWidget* parent
     diffHighlighter = new DiffHighlighter(this);
 }
 
-void PatchContent::setup(Domain*, Git* g)
+void PatchContent::setup(Domain*, GitSharedPtr g)
 {
 
     git = g;

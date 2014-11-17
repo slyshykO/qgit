@@ -55,6 +55,7 @@ class QProcess;
 class QSplitter;
 class QWidget;
 class ShaString;
+class Git;
 
 // type shortcuts
 typedef const QString&              SCRef;
@@ -63,8 +64,11 @@ typedef const QStringList&          SCList;
 typedef QVector<QString>            StrVect;
 typedef QVector<ShaString>          ShaVect;
 typedef QSet<QString>               ShaSet;
+typedef QSharedPointer<Git>         GitSharedPtr;
 
 uint qHash(const ShaString&); // optimized custom hash for sha strings
+
+
 
 namespace QGit
 {

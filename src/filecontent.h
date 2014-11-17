@@ -29,7 +29,7 @@ class FileContent: public QTextEdit
 public:
 	FileContent(QWidget* parent);
 	~FileContent();
-	void setup(Domain* parent, Git* git, QListWidget* lwa);
+	void setup(Domain* parent, GitSharedPtr git, QListWidget* lwa);
 	void doUpdate(bool force = false);
 	void clearAll(bool emitSignal = true);
 	void copySelection();
@@ -84,7 +84,7 @@ private:
 	void setAnnList();
 
 	Domain* d;
-	Git* git;
+	GitSharedPtr git;
 	QListWidget* listWidgetAnn;
 	StateInfo* st;
 	RangeInfo* rangeInfo;

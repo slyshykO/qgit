@@ -7,6 +7,7 @@
 #ifndef MAINIMPL_H
 #define MAINIMPL_H
 
+#include <QSharedPointer>
 #include <QProcess>
 #include <QRegExp>
 #include <QDir>
@@ -164,7 +165,7 @@ private:
 
     EM_DECLARE(exExiting);
 
-    Git* git;
+    QSharedPointer<Git> git;
     RevsView* rv;
     QProgressBar* pbFileNamesLoading;
 

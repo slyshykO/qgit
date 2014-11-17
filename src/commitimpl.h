@@ -16,40 +16,40 @@ class CommitImpl : public QWidget, public Ui_CommitBase
 {
     Q_OBJECT
 public:
-	explicit CommitImpl(Git* g, bool amend);
+    explicit CommitImpl(GitSharedPtr g, bool amend);
 
 signals:
-	void changesCommitted(bool);
+    void changesCommitted(bool);
 
 public slots:
-	virtual void closeEvent(QCloseEvent*);
-	void pushButtonCommit_clicked();
-	void pushButtonAmend_clicked();
-	void pushButtonCancel_clicked();
-	void pushButtonUpdateCache_clicked();
-	void pushButtonSettings_clicked();
-	void textEditMsg_cursorPositionChanged();
+    virtual void closeEvent(QCloseEvent*);
+    void pushButtonCommit_clicked();
+    void pushButtonAmend_clicked();
+    void pushButtonCancel_clicked();
+    void pushButtonUpdateCache_clicked();
+    void pushButtonSettings_clicked();
+    void textEditMsg_cursorPositionChanged();
 
 private slots:
-	void contextMenuPopup(const QPoint&);
-	void checkAll();
-	void unCheckAll();
+    void contextMenuPopup(const QPoint&);
+    void checkAll();
+    void unCheckAll();
 
 private:
-	void checkUncheck(bool checkAll);
-	bool getFiles(SList selFiles);
-	void warnNoFiles();
-	bool checkFiles(SList selFiles);
-	bool checkMsg(QString& msg);
-	bool checkPatchName(QString& patchName);
-	bool checkConfirm(SCRef msg, SCRef patchName, SCList selFiles, bool amend);
-	void computePosition(int &col_pos, int &line_pos);
+    void checkUncheck(bool checkAll);
+    bool getFiles(SList selFiles);
+    void warnNoFiles();
+    bool checkFiles(SList selFiles);
+    bool checkMsg(QString& msg);
+    bool checkPatchName(QString& patchName);
+    bool checkConfirm(SCRef msg, SCRef patchName, SCList selFiles, bool amend);
+    void computePosition(int &col_pos, int &line_pos);
 
-	Git* git;
-	QString origMsg;
-	int ofsX, ofsY;
+    GitSharedPtr git;
+    QString origMsg;
+    int ofsX, ofsY;
 
-	static QString lastMsgBeforeError;
+    static QString lastMsgBeforeError;
 };
 
 #endif

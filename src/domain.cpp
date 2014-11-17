@@ -93,7 +93,7 @@ bool StateInfo::isChanged(uint what) const
 
 // ************************* Domain ****************************
 
-Domain::Domain(MainImpl* m, Git* g, bool isMain ) : QObject(m), git(g)
+Domain::Domain(MainImpl* m, GitSharedPtr g, bool isMain ) : QObject(m), git(g)
 {
     EM_INIT(exDeleteRequest, "Deleting domain");
     EM_INIT(exCancelRequest, "Canceling update");

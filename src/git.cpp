@@ -29,32 +29,33 @@ using namespace QGit;
 
 // ****************************************************************************
 
-bool Git::TreeEntry::operator<(const TreeEntry& te) const {
+bool Git::TreeEntry::operator<(const TreeEntry& te) const
+{
+    if (this->type == te.type)
+        return (this->name < te.name);
 
-	if (this->type == te.type)
-		return (this->name < te.name);
+    // directories are smaller then files
+    // to appear as first when sorted
+    if (this->type == "tree")
+        return true;
 
-	// directories are smaller then files
-	// to appear as first when sorted
-	if (this->type == "tree")
-		return true;
+    if (te.type == "tree")
+        return false;
 
-	if (te.type == "tree")
-		return false;
-
-	return (this->name < te.name);
+    return (this->name < te.name);
 }
 
-Git::Git(QObject* p) : QObject(p) {
+Git::Git(QObject* p) :
+    QObject(p)
+{
+    EM_INIT(exGitStopped, "Stopping connection with git");
 
-	EM_INIT(exGitStopped, "Stopping connection with git");
-
-	fileCacheAccessed = cacheNeedsUpdate = isMergeHead = false;
-	isStGIT = isGIT = loadingUnAppliedPatches = isTextHighlighterFound = false;
-	errorReportingEnabled = true; // report errors if run() fails
-	curDomain = NULL;
-	revData = NULL;
-	revsFiles.reserve(MAX_DICT_SIZE);
+    fileCacheAccessed = cacheNeedsUpdate = isMergeHead = false;
+    isStGIT = isGIT = loadingUnAppliedPatches = isTextHighlighterFound = false;
+    errorReportingEnabled = true; // report errors if run() fails
+    curDomain = NULL;
+    revData = NULL;
+    revsFiles.reserve(MAX_DICT_SIZE);
 }
 
 void Git::checkEnvironment()

@@ -20,7 +20,7 @@
 #include "mainimpl.h"
 #include "revsview.h"
 
-RevsView::RevsView(MainImpl* mi, Git* g, bool isMain) :
+RevsView::RevsView(MainImpl* mi, GitSharedPtr g, bool isMain) :
     Domain(mi, g, isMain)
 {
 
@@ -48,10 +48,10 @@ RevsView::RevsView(MainImpl* mi, Git* g, bool isMain) :
     connect(m(), SIGNAL(flagChanged(uint)),
             sb, SLOT(flagChanged(uint)));
 
-    connect(git, SIGNAL(newRevsAdded(const FileHistory*, const QVector<ShaString>&)),
+    connect(git.data(), SIGNAL(newRevsAdded(const FileHistory*, const QVector<ShaString>&)),
             this, SLOT(on_newRevsAdded(const FileHistory*, const QVector<ShaString>&)));
 
-    connect(git, SIGNAL(loadCompleted(const FileHistory*, const QString &)),
+    connect(git.data(), SIGNAL(loadCompleted(const FileHistory*, const QString &)),
             this, SLOT(on_loadCompleted(const FileHistory*, const QString &)));
 
     connect(m(), SIGNAL(changeFont(const QFont &)),

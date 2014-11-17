@@ -14,11 +14,9 @@
 
 using namespace QGit;
 
-RangeSelectImpl::RangeSelectImpl(QWidget* par, QString* r, bool repoChanged, Git* g
-                                 )
+RangeSelectImpl::RangeSelectImpl(QWidget* par, QString* r, bool repoChanged, GitSharedPtr g)
     : QDialog(par), git(g), range(r)
 {
-
     setupUi(this);
 
     QStringList orl, tmp;

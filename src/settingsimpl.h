@@ -8,15 +8,15 @@
 #define SETTINGSIMPL_H
 
 #include "ui_settings.h"
+#include "common.h"
 
 class QVariant;
-class Git;
 
 class SettingsImpl: public QDialog, public Ui_settingsBase
 {
     Q_OBJECT
 public:
-    SettingsImpl(QWidget* parent, Git* git, int defTab = 0);
+    SettingsImpl(QWidget* parent, GitSharedPtr git, int defTab = 0);
 
 signals:
     void typeWriterFontChanged();
@@ -59,7 +59,7 @@ private:
     void userInfo();
     void changeFlag(uint f, bool b);
 
-    Git* git;
+    GitSharedPtr git;
     QStringList _uInfo;
     bool populatingGitConfig;
 };

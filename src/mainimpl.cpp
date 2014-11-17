@@ -68,7 +68,7 @@ MainImpl::MainImpl(SCRef cd, QWidget* p) : QMainWindow(p)
     EVEN_LINE_COL = ODD_LINE_COL.dark(103);
 
     // our interface to git world
-    git = new Git(this);
+    git = QSharedPointer<Git>(new Git());
     setupShortcuts();
     qApp->installEventFilter(this);
 
@@ -141,14 +141,14 @@ MainImpl::MainImpl(SCRef cd, QWidget* p) : QMainWindow(p)
     // disable all actions
     updateGlobalActions(false);
 
-    connect(git, SIGNAL(fileNamesLoad(int, int)), this, SLOT(fileNamesLoad(int, int)));
+    connect(git.data(), SIGNAL(fileNamesLoad(int, int)), this, SLOT(fileNamesLoad(int, int)));
 
-    connect(git, SIGNAL(newRevsAdded(const FileHistory*, const QVector<ShaString>&)),
+    connect(git.data(), SIGNAL(newRevsAdded(const FileHistory*, const QVector<ShaString>&)),
             this, SLOT(newRevsAdded(const FileHistory*, const QVector<ShaString>&)));
 
     connect(this, SIGNAL(typeWriterFontChanged()), this, SIGNAL(updateRevDesc()));
 
-    connect(this, SIGNAL(changeFont(const QFont&)), git, SIGNAL(changeFont(const QFont&)));
+    connect(this, SIGNAL(changeFont(const QFont&)), git.data(), SIGNAL(changeFont(const QFont&)));
 
     // connect cross-domain update signals
     connect(rv->tab()->listViewLog, SIGNAL(doubleClicked(const QModelIndex&)),
@@ -239,11 +239,11 @@ void MainImpl::ActForward_activated() {
 
 void MainImpl::ActExternalDiff_activated()
 {
-	QStringList args;
-	QStringList filenames;
-	getExternalDiffArgs(&args, &filenames);
-	ExternalDiffProc* externalDiff = new ExternalDiffProc(filenames, this);
-	externalDiff->setWorkingDirectory(curDir);
+    QStringList args;
+    QStringList filenames;
+    getExternalDiffArgs(&args, &filenames);
+    ExternalDiffProc* externalDiff = new ExternalDiffProc(filenames, this);
+    externalDiff->setWorkingDirectory(curDir);
 
     if (!QGit::startProcess(externalDiff, args))
         {
@@ -256,48 +256,49 @@ void MainImpl::ActExternalDiff_activated()
 
 void MainImpl::getExternalDiffArgs(QStringList* args, QStringList* filenames)
 {
-	// save files to diff in working directory,
-	// will be removed by ExternalDiffProc on exit
-	QFileInfo f(rv->st.fileName());
-	QString prevRevSha(rv->st.diffToSha());
-	if (prevRevSha.isEmpty()) { // default to first parent
-		const Rev* r = git->revLookup(rv->st.sha());
-		prevRevSha = (r && r->parentsCount() > 0 ? r->parent(0) : rv->st.sha());
-	}
-	QFileInfo fi(f);
-	QString fName1(curDir + "/" + rv->st.sha().left(6) + "_" + fi.fileName());
-	QString fName2(curDir + "/" + prevRevSha.left(6) + "_" + fi.fileName());
+    // save files to diff in working directory,
+    // will be removed by ExternalDiffProc on exit
+    QFileInfo f(rv->st.fileName());
+    QString prevRevSha(rv->st.diffToSha());
+    if (prevRevSha.isEmpty())
+        { // default to first parent
+            const Rev* r = git->revLookup(rv->st.sha());
+            prevRevSha = (r && r->parentsCount() > 0 ? r->parent(0) : rv->st.sha());
+        }
+    QFileInfo fi(f);
+    QString fName1(curDir + "/" + rv->st.sha().left(6) + "_" + fi.fileName());
+    QString fName2(curDir + "/" + prevRevSha.left(6) + "_" + fi.fileName());
 
-	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-	QByteArray fileContent;
-	QString fileSha(git->getFileSha(rv->st.fileName(), rv->st.sha()));
-	git->getFile(fileSha, NULL, &fileContent, rv->st.fileName());
-	if (!writeToFile(fName1, QString(fileContent)))
-		statusBar()->showMessage("Unable to save " + fName1);
+    QByteArray fileContent;
+    QString fileSha(git->getFileSha(rv->st.fileName(), rv->st.sha()));
+    git->getFile(fileSha, NULL, &fileContent, rv->st.fileName());
+    if (!writeToFile(fName1, QString(fileContent)))
+        statusBar()->showMessage("Unable to save " + fName1);
 
-	fileSha = git->getFileSha(rv->st.fileName(), prevRevSha);
-	git->getFile(fileSha, NULL, &fileContent, rv->st.fileName());
-	if (!writeToFile(fName2, QString(fileContent)))
-		statusBar()->showMessage("Unable to save " + fName2);
+    fileSha = git->getFileSha(rv->st.fileName(), prevRevSha);
+    git->getFile(fileSha, NULL, &fileContent, rv->st.fileName());
+    if (!writeToFile(fName2, QString(fileContent)))
+        statusBar()->showMessage("Unable to save " + fName2);
 
-	// get external diff viewer command
-	QSettings settings;
-	QString extDiff(settings.value(EXT_DIFF_KEY, EXT_DIFF_DEF).toString());
+    // get external diff viewer command
+    QSettings settings;
+    QString extDiff(settings.value(EXT_DIFF_KEY, EXT_DIFF_DEF).toString());
 
-	QApplication::restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
 
-	// if command doesn't have %1 and %2 to denote filenames, add them to end
-	if (!extDiff.contains("%1")) {
-		extDiff.append(" %1");
-	}
-	if (!extDiff.contains("%2")) {
-		extDiff.append(" %2");
-	}
+    // if command doesn't have %1 and %2 to denote filenames, add them to end
+    if (!extDiff.contains("%1"))
+        extDiff.append(" %1");
 
-	// set process arguments
-	QStringList extDiffArgs = extDiff.split(' ');
-	QString curArg;
+    if (!extDiff.contains("%2"))
+        extDiff.append(" %2");
+
+
+    // set process arguments
+    QStringList extDiffArgs = extDiff.split(' ');
+    QString curArg;
     for (int i = 0; i < extDiffArgs.count(); i++)
         {
             curArg = extDiffArgs.value(i);
@@ -310,9 +311,9 @@ void MainImpl::getExternalDiffArgs(QStringList* args, QStringList* filenames)
             args->append(curArg);
         }
 
-	// set filenames so that they can be deleted when the process completes
-	filenames->append(fName1);
-	filenames->append(fName2);
+    // set filenames so that they can be deleted when the process completes
+    filenames->append(fName1);
+    filenames->append(fName2);
 }
 
 // ********************** Repository open or changed *************************
@@ -1520,20 +1521,20 @@ void MainImpl::ActCheckWorkDir_toggled(bool b) {
 	refreshRepo(keepSelection);
 }
 
-void MainImpl::ActSettings_activated() {
+void MainImpl::ActSettings_activated()
+{
+    SettingsImpl setView(this, git);
+    connect(&setView, SIGNAL(typeWriterFontChanged()),
+            this, SIGNAL(typeWriterFontChanged()));
 
-	SettingsImpl setView(this, git);
-	connect(&setView, SIGNAL(typeWriterFontChanged()),
-	        this, SIGNAL(typeWriterFontChanged()));
+    connect(&setView, SIGNAL(flagChanged(uint)),
+            this, SIGNAL(flagChanged(uint)));
 
-	connect(&setView, SIGNAL(flagChanged(uint)),
-	        this, SIGNAL(flagChanged(uint)));
+    setView.exec();
 
-	setView.exec();
-
-	// update ActCheckWorkDir if necessary
-	if (ActCheckWorkDir->isChecked() != testFlag(DIFF_INDEX_F))
-		ActCheckWorkDir->toggle();
+    // update ActCheckWorkDir if necessary
+    if (ActCheckWorkDir->isChecked() != testFlag(DIFF_INDEX_F))
+        ActCheckWorkDir->toggle();
 }
 
 void MainImpl::ActCustomActionSetup_activated() {
@@ -1617,12 +1618,12 @@ void MainImpl::customAction_exited(const QString& name) {
 		QTimer::singleShot(10, this, SLOT(refreshRepo())); // outside of event handler
 }
 
-void MainImpl::ActCommit_activated() {
-
-	CommitImpl* c = new CommitImpl(git, false); // has Qt::WA_DeleteOnClose attribute
-	connect(this, SIGNAL(closeAllWindows()), c, SLOT(close()));
-	connect(c, SIGNAL(changesCommitted(bool)), this, SLOT(changesCommitted(bool)));
-	c->show();
+void MainImpl::ActCommit_activated()
+{
+    CommitImpl* c = new CommitImpl(git, false); // has Qt::WA_DeleteOnClose attribute
+    connect(this, SIGNAL(closeAllWindows()), c, SLOT(close()));
+    connect(c, SIGNAL(changesCommitted(bool)), this, SLOT(changesCommitted(bool)));
+    c->show();
 }
 
 void MainImpl::ActAmend_activated() {
