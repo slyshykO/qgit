@@ -236,7 +236,6 @@ bool RevsView::doUpdate(bool force)
 
             if (st.isChanged(StateInfo::ANY & ~StateInfo::FILE_NAME) || force)
                 {
-
                     tab()->fileList->clear();
 
                     if (linkedPatchView) // give some feedback while waiting

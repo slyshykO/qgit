@@ -433,17 +433,17 @@ void MainImpl::updateGlobalActions(bool b)
 void MainImpl::updateContextActions(SCRef newRevSha, SCRef newFileName,
                                     bool isDir, bool found)
 {
-	bool pathActionsEnabled = !newFileName.isEmpty();
-	bool fileActionsEnabled = (pathActionsEnabled && !isDir);
+    bool pathActionsEnabled = !newFileName.isEmpty();
+    bool fileActionsEnabled = (pathActionsEnabled && !isDir);
 
-	ActViewFile->setEnabled(fileActionsEnabled);
-	ActViewFileNewTab->setEnabled(fileActionsEnabled && firstTab<FileView>());
-	ActExternalDiff->setEnabled(fileActionsEnabled);
-	ActSaveFile->setEnabled(fileActionsEnabled);
-	ActFilterTree->setEnabled(pathActionsEnabled || ActFilterTree->isChecked());
+    ActViewFile->setEnabled(fileActionsEnabled);
+    ActViewFileNewTab->setEnabled(fileActionsEnabled && firstTab<FileView>());
+    ActExternalDiff->setEnabled(fileActionsEnabled);
+    ActSaveFile->setEnabled(fileActionsEnabled);
+    ActFilterTree->setEnabled(pathActionsEnabled || ActFilterTree->isChecked());
 
-	bool isTag, isUnApplied, isApplied;
-	isTag = isUnApplied = isApplied = false;
+    bool isTag, isUnApplied, isApplied;
+    isTag = isUnApplied = isApplied = false;
 
     if (found)
         {
@@ -452,11 +452,11 @@ void MainImpl::updateContextActions(SCRef newRevSha, SCRef newFileName,
             isUnApplied = r->isUnApplied;
             isApplied = r->isApplied;
         }
-	ActBranch->setEnabled(found && (newRevSha != ZERO_SHA) && !isUnApplied);
-	ActTag->setEnabled(found && (newRevSha != ZERO_SHA) && !isUnApplied);
-	ActTagDelete->setEnabled(found && isTag && (newRevSha != ZERO_SHA) && !isUnApplied);
-	ActPush->setEnabled(found && isUnApplied && git->isNothingToCommit());
-	ActPop->setEnabled(found && isApplied && git->isNothingToCommit());
+    ActBranch->setEnabled(found && (newRevSha != ZERO_SHA) && !isUnApplied);
+    ActTag->setEnabled(found && (newRevSha != ZERO_SHA) && !isUnApplied);
+    ActTagDelete->setEnabled(found && isTag && (newRevSha != ZERO_SHA) && !isUnApplied);
+    ActPush->setEnabled(found && isUnApplied && git->isNothingToCommit());
+    ActPop->setEnabled(found && isApplied && git->isNothingToCommit());
 }
 
 // ************************* cross-domain update Actions ***************************
