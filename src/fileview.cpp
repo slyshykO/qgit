@@ -17,8 +17,8 @@
 
 #define MAX_LINE_NUM 5
 
-FileView::FileView(MainImpl* mi, Git* g
-                   ) : Domain(mi, g, false)
+FileView::FileView(MainImpl* mi, Git* g) :
+    Domain(mi, g, false)
 {
 
     fileTab = new Ui_TabFile();
