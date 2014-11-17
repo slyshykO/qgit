@@ -137,7 +137,7 @@ private:
     virtual bool eventFilter(QObject* obj, QEvent* ev);
     void updateGlobalActions(bool b);
     void setupShortcuts();
-    int currentTabType(Domain** t);
+    int  currentTabType(Domain** t);
     void filterList(bool isOn, bool onlyHighlight);
     bool isMatch(SCRef sha, SCRef f, int cn, const QMap<QString,bool>& sm);
     void highlightAbbrevSha(SCRef abbrevSha);

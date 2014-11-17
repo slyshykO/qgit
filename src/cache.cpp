@@ -69,11 +69,8 @@ bool Cache::save(const QString& gitDir, const RevFileMap& rf,
 
     FOREACH (RevFileMap, it, rf)
     {
-
         const ShaString& sha = it.key();
-        if (   sha == ZERO_SHA_RAW
-               || sha == CUSTOM_SHA_RAW
-               || sha.latin1()[0] == 'A') // ALL_MERGE_FILES + rev sha
+        if (   sha == ZERO_SHA_RAW || sha == CUSTOM_SHA_RAW || sha.latin1()[0] == 'A') // ALL_MERGE_FILES + rev sha
             continue;
 
         v.append(it.value());

@@ -36,6 +36,8 @@ QtGuiApplication{
         var flags = base;
         if(cpp.compilerName.contains("g++"))
             flags = flags.concat(["-fdata-sections","-ffunction-sections","-flto"])
+        if(cpp.compilerName.contains("g++") && (qbs.buildVariant == "release"))
+            flags = flags.concat(["-flto"])
         return flags
     }
     cpp.cxxFlags:{
@@ -46,9 +48,11 @@ QtGuiApplication{
     }
     cpp.linkerFlags:{
         var flags = base
-        if(cpp.compilerName.contains("g++") && (qbs.buildVariant == "debug")){
-            flags = flags.concat(["-Wl,--gc-sections","-flto"])
+        if(cpp.compilerName.contains("g++") ){
+            flags = flags.concat(["-Wl,--gc-sections"])
         }
+        if(cpp.compilerName.contains("g++") && (qbs.buildVariant == "release"))
+            flags = flags.concat(["-flto"])
         return flags
     }
 
