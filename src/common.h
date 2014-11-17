@@ -293,6 +293,21 @@ public:
     }
 };
 
+struct Reference
+{ // stores tag information associated to a revision
+    Reference() : type(0) {}
+    uint type;
+    QStringList branches;
+    QStringList remoteBranches;
+    QString     currentBranch;
+    QStringList tags;
+    QStringList refs;
+    QString     tagObj; //TODO: support more then one obj
+    QString     tagMsg;
+    QString     stgitPatch;
+};
+typedef QHash<ShaString, Reference> RefMap;
+
 class Rev
 {
     // prevent implicit C++ compiler defaults
