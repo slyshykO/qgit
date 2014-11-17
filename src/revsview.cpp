@@ -281,7 +281,6 @@ void RevsView::updateLineEditSHA(bool clear)
         l->setText("");  // clears history
     else if (l->text() != st.sha())
         {
-
             if (l->text().isEmpty())
                 l->setText(st.sha());  // first rev clears history
             else

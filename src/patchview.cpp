@@ -49,6 +49,7 @@ PatchView::PatchView(MainImpl* mi, GitSharedPtr g ) :
 
 PatchView::~PatchView()
 {
+    qDebug() << Q_FUNC_INFO;
     if (!parent())
         return;
 
