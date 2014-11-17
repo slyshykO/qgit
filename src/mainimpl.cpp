@@ -68,7 +68,8 @@ MainImpl::MainImpl(SCRef cd, QWidget* p) : QMainWindow(p)
     EVEN_LINE_COL = ODD_LINE_COL.dark(103);
 
     // our interface to git world
-    git = QSharedPointer<Git>(new Git());
+    git = QSharedPointer<Git>(new Git(/*this*/));
+    git->setMainImpl(this);
     setupShortcuts();
     qApp->installEventFilter(this);
 

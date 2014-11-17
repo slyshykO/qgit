@@ -75,7 +75,7 @@ void Git::checkEnvironment()
                           "\nPlease upgrade to avoid possible misbehaviours.");
 
                     MainExecErrorEvent* e = new MainExecErrorEvent(cmd, errorDesc);
-                    QApplication::postEvent(parent(), e);
+                    QApplication::postEvent(m(), e);
                 }
         }
     else
@@ -1210,7 +1210,7 @@ const QString Git::getNewestFileName(SCList branches, SCRef fileName) {
 			break;
 
 		QString msg("Retrieving file renames, now at '" + curFileName + "'...");
-		QApplication::postEvent(parent(), new MessageEvent(msg));
+        QApplication::postEvent(m(), new MessageEvent(msg));
 		EM_PROCESS_EVENTS_NO_INPUT;
 
 		if (!run("git rev-list -n1 " + args, &runOutput))

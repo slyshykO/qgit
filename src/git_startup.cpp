@@ -21,7 +21,7 @@
 #include "git.h"
 #include "filehistory.hpp"
 
-#define SHOW_MSG(x) QApplication::postEvent(parent(), new MessageEvent(x)); EM_PROCESS_EVENTS_NO_INPUT;
+#define SHOW_MSG(x) QApplication::postEvent(m(), new MessageEvent(x)); EM_PROCESS_EVENTS_NO_INPUT;
 
 using namespace QGit;
 
@@ -494,9 +494,9 @@ bool Git::startParseProc(SCList initCmd, FileHistory* fh, SCRef buf) {
 	return dl->start(initCmd, workDir, buf);
 }
 
-bool Git::startRevList(SCList args, FileHistory* fh) {
-
-	QString baseCmd("git log --topo-order --no-color "
+bool Git::startRevList(SCList args, FileHistory* fh)
+{
+    QString baseCmd("git log --topo-order --no-color "
 
 #ifndef Q_OS_WIN32
 	                "--log-size " // FIXME broken on Windows
@@ -577,52 +577,51 @@ void Git::stop(bool saveCache)
 
 void Git::clearRevs()
 {
-	revData->clear();
+    revData->clear();
     patchesStillToFind = 0; //TODO: TEST WITH FILTERING
-	firstNonStGitPatch = "";
-	workingDirInfo.clear();
-	revsFiles.remove(ZERO_SHA_RAW);
+    firstNonStGitPatch = "";
+    workingDirInfo.clear();
+    revsFiles.remove(ZERO_SHA_RAW);
 }
 
 void Git::clearFileNames()
 {
-	qDeleteAll(revsFiles);
-	revsFiles.clear();
-	fileNamesMap.clear();
-	dirNamesMap.clear();
-	dirNamesVec.clear();
-	fileNamesVec.clear();
-	revsFilesShaBackupBuf.clear();
-	cacheNeedsUpdate = false;
+    qDeleteAll(revsFiles);
+    revsFiles.clear();
+    fileNamesMap.clear();
+    dirNamesMap.clear();
+    dirNamesVec.clear();
+    fileNamesVec.clear();
+    revsFilesShaBackupBuf.clear();
+    cacheNeedsUpdate = false;
 }
 
 bool Git::init(SCRef wd, bool askForRange, const QStringList* passedArgs, bool overwriteArgs, bool* quit)
 {
-// normally called when changing git directory. Must be called after stop()
+    // normally called when changing git directory. Must be called after stop()
+    *quit = false;
+    clearRevs();
 
-	*quit = false;
-	clearRevs();
+    /* we only update filtering info here, original arguments
+     * are not overwritten. Only getArgs() can update arguments,
+     * an exception is if flag overwriteArgs is set
+     */
+    loadArguments.filteredLoading = (!overwriteArgs && passedArgs != NULL);
+    if (loadArguments.filteredLoading)
+        loadArguments.filterList = *passedArgs;
 
-	/* we only update filtering info here, original arguments
-	 * are not overwritten. Only getArgs() can update arguments,
-	 * an exception is if flag overwriteArgs is set
-	 */
-	loadArguments.filteredLoading = (!overwriteArgs && passedArgs != NULL);
-	if (loadArguments.filteredLoading)
-		loadArguments.filterList = *passedArgs;
-
-	if (overwriteArgs) // in this case must be passedArgs != NULL
-		loadArguments.args = *passedArgs;
+    if (overwriteArgs) // in this case must be passedArgs != NULL
+        loadArguments.args = *passedArgs;
 
     try
     {
-		setThrowOnStop(true);
+        setThrowOnStop(true);
 
-		const QString msg1("Path is '" + workDir + "'    Loading ");
+        const QString msg1("Path is '" + workDir + "'    Loading ");
 
-		// check if repository is valid
-		bool repoChanged;
-		workDir = getBaseDir(&repoChanged, wd, &isGIT, &gitDir);
+        // check if repository is valid
+        bool repoChanged;
+        workDir = getBaseDir(&repoChanged, wd, &isGIT, &gitDir);
 
         if (repoChanged)
             {
@@ -676,49 +675,49 @@ bool Git::init(SCRef wd, bool askForRange, const QStringList* passedArgs, bool o
                             }
                     }
             }
-		init2();
-		setThrowOnStop(false);
-		return true;
+        init2();
+        setThrowOnStop(false);
+        return true;
 
     }
     catch (int i)
     {
-		setThrowOnStop(false);
+        setThrowOnStop(false);
         if (isThrowOnStopRaised(i, "initializing 1"))
             {
                 EM_THROW_PENDING;
                 return false;
             }
-		const QString info("Exception \'" + EM_DESC(i) + "\' "
-		                   "not handled in init...re-throw");
-		dbs(info);
-		throw;
-	}
+        const QString info("Exception \'" + EM_DESC(i) + "\' "
+                           "not handled in init...re-throw");
+        dbs(info);
+        throw;
+    }
 }
 
-void Git::init2() {
+void Git::init2()
+{
+    const QString msg1("Path is '" + workDir + "'    Loading ");
 
-	const QString msg1("Path is '" + workDir + "'    Loading ");
-
-	// after loading unapplied patch update base early output offset to
-	// avoid losing unapplied patches at first early output event
-	if (isStGIT)
-		revData->earlyOutputCntBase = revData->revOrder.count();
+    // after loading unapplied patch update base early output offset to
+    // avoid losing unapplied patches at first early output event
+    if (isStGIT)
+        revData->earlyOutputCntBase = revData->revOrder.count();
 
     try
     {
-		setThrowOnStop(true);
+        setThrowOnStop(true);
 
-		// load working dir files
+        // load working dir files
         if (!loadArguments.filteredLoading && testFlag(DIFF_INDEX_F))
             {
                 SHOW_MSG(msg1 + "working directory changed files...");
                 getDiffIndex(); // blocking, we could be in setRepository() now
             }
-		SHOW_MSG(msg1 + "revisions...");
+        SHOW_MSG(msg1 + "revisions...");
 
-		// build up command line arguments
-		QStringList args(loadArguments.args);
+        // build up command line arguments
+        QStringList args(loadArguments.args);
         if (loadArguments.filteredLoading)
             {
                 if (!args.contains("--"))
@@ -726,32 +725,31 @@ void Git::init2() {
 
                 args << loadArguments.filterList;
             }
-		if (!startRevList(args, revData))
-			SHOW_MSG("ERROR: unable to start 'git log'");
+        if (!startRevList(args, revData))
+            SHOW_MSG("ERROR: unable to start 'git log'");
 
-		setThrowOnStop(false);
+        setThrowOnStop(false);
 
     }
     catch (int i)
     {
-
-		setThrowOnStop(false);
+        setThrowOnStop(false);
 
         if (isThrowOnStopRaised(i, "initializing 2"))
             {
                 EM_THROW_PENDING;
                 return;
             }
-		const QString info("Exception \'" + EM_DESC(i) + "\' "
-		                   "not handled in init2...re-throw");
-		dbs(info);
-		throw;
-	}
+        const QString info("Exception \'" + EM_DESC(i) + "\' "
+                           "not handled in init2...re-throw");
+        dbs(info);
+        throw;
+    }
 }
 
 void Git::on_newDataReady(const FileHistory* fh)
 {
-	emit newRevsAdded(fh , fh->revOrder);
+    emit newRevsAdded(fh , fh->revOrder);
 }
 
 void Git::on_loaded(FileHistory* fh, ulong byteSize, int loadTime,
@@ -760,7 +758,7 @@ void Git::on_loaded(FileHistory* fh, ulong byteSize, int loadTime,
     if (!errorDesc.isEmpty())
         {
             MainExecErrorEvent* e = new MainExecErrorEvent(cmd, errorDesc);
-            QApplication::postEvent(parent(), e);
+            QApplication::postEvent(m(), e);
         }
     if (normalExit)
         { // do not send anything if killed

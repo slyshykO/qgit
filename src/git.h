@@ -28,6 +28,8 @@ class Git : public QObject
     Q_OBJECT
 public:
     explicit Git(QObject* parent = 0);
+    QObject* m(){return mainImpl;}
+    void setMainImpl(QObject* m){mainImpl = m;}
 
     // used as self-documenting boolean parameters
     static const bool optFalse       = false;
@@ -250,6 +252,7 @@ private:
     EM_DECLARE(exGitStopped);
 
     Domain* curDomain;
+    QObject* mainImpl;
     QString workDir; // workDir is always without trailing '/'
     QString gitDir;
     QString filesLoadingPending;

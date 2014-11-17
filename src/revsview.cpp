@@ -162,7 +162,7 @@ void RevsView::viewPatch(bool newTab)
 
     if (!newTab)   // linkedPatchView == NULL
         {
-            linkedPatchView.reset(pv);
+            linkedPatchView = pv;
             linkDomain(linkedPatchView.data());
 
             connect(m(), SIGNAL(highlightPatch(const QString &, bool)),

@@ -52,7 +52,7 @@ private:
     void updateLineEditSHA(bool clear = false);
 
     QScopedPointer<Ui_TabRev> revTab;
-    QScopedPointer<PatchView,QScopedPointerDeleteLater> linkedPatchView;
+    QPointer<PatchView> linkedPatchView;
 };
 
 #endif

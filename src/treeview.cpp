@@ -13,15 +13,16 @@
 #include "mainimpl.h"
 #include "treeview.h"
 
-QString FileItem::fullName() const {
-
-	QTreeWidgetItem* p = parent();
-	QString s(p ? text(0) : ""); // root directory has no fullName
-	while (p && p->parent()) {
-		s.prepend(p->text(0) + '/');
-		p = p->parent();
-	}
-	return s;
+QString FileItem::fullName() const
+{
+    QTreeWidgetItem* p = parent();
+    QString s(p ? text(0) : ""); // root directory has no fullName
+    while (p && p->parent())
+        {
+            s.prepend(p->text(0) + '/');
+            p = p->parent();
+        }
+    return s;
 }
 
 void FileItem::setBold(bool b) {
