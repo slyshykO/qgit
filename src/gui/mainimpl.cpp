@@ -823,7 +823,8 @@ bool MainImpl::event(QEvent* e)
     SCRef data = de->myData();
     bool ret = true;
 
-    switch (e->type())
+    int type = e->type();
+    switch (type)
         {
         case ERROR_EV:
             {
@@ -1820,38 +1821,38 @@ void MainImpl::ActFindNext_activated()
         }
 }
 
-void MainImpl::ActFind_activated() {
+void MainImpl::ActFind_activated()
+{
+    QTextEdit* te = getCurrentTextEdit();
+    if (!te)
+        return;
 
-	QTextEdit* te = getCurrentTextEdit();
-	if (!te)
-		return;
+    QString def(textToFind);
+    if (te->textCursor().hasSelection())
+        def = te->textCursor().selectedText().section('\n', 0, 0);
+    else
+        te->moveCursor(QTextCursor::Start);
 
-	QString def(textToFind);
-	if (te->textCursor().hasSelection())
-		def = te->textCursor().selectedText().section('\n', 0, 0);
-	else
-		te->moveCursor(QTextCursor::Start);
+    bool ok;
+    QString str(QInputDialog::getText(this, "Find text - QGit", "Text to find:",
+                                      QLineEdit::Normal, def, &ok));
+    if (!ok || str.isEmpty())
+        return;
 
-	bool ok;
-	QString str(QInputDialog::getText(this, "Find text - QGit", "Text to find:",
-	                                  QLineEdit::Normal, def, &ok));
-	if (!ok || str.isEmpty())
-		return;
-
-	textToFind = str; // update with valid data only
-	ActFindNext_activated();
+    textToFind = str; // update with valid data only
+    ActFindNext_activated();
 }
 
-void MainImpl::ActHelp_activated() {
-
-	QDialog* dlg = new QDialog();
-	dlg->setAttribute(Qt::WA_DeleteOnClose);
-	Ui::HelpBase ui;
-	ui.setupUi(dlg);
-	ui.textEditHelp->setHtml(QString::fromLatin1(helpInfo)); // defined in help.h
-	connect(this, SIGNAL(closeAllWindows()), dlg, SLOT(close()));
-	dlg->show();
-	dlg->raise();
+void MainImpl::ActHelp_activated()
+{
+    QDialog* dlg = new QDialog();
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    Ui::HelpBase ui;
+    ui.setupUi(dlg);
+    ui.textEditHelp->setHtml(QString::fromLatin1(helpInfo)); // defined in help.h
+    connect(this, SIGNAL(closeAllWindows()), dlg, SLOT(close()));
+    dlg->show();
+    dlg->raise();
 }
 
 void MainImpl::ActAbout_activated()

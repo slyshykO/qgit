@@ -18,7 +18,7 @@ QtGuiApplication{
         }
 
     Group{
-        name: "res"
+        name: "x_res"
         prefix: "src/"
         files: ["*.qrc", "*.rc"]
     }
@@ -29,6 +29,11 @@ QtGuiApplication{
     Group{
         name:"src"
         prefix:"src/"
+        files:["*.h","*.hpp","*.cpp", "*.ui"]
+    }
+    Group{
+        name:"gui"
+        prefix:"src/gui/"
         files:["*.h","*.hpp","*.cpp", "*.ui"]
     }
 
@@ -57,7 +62,7 @@ QtGuiApplication{
     }
 
     cpp.includePaths:{
-        var inc_paths = base.concat(["src"])
+        var inc_paths = base.concat(["src","src/gui"])
         return inc_paths
     }
 }
