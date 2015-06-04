@@ -237,7 +237,8 @@ bool Domain::event(QEvent* e)
 {
     bool fromMaster = false;
 
-    switch (e->type())
+    int type = e->type();
+    switch (type)
         {
         case UPD_DM_MST_EV:
             fromMaster = true;

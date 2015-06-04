@@ -10,6 +10,7 @@
 
  */
 #include <QList>
+#include <QDebug>
 #include "exceptionmanager.h"
 
 ExceptionManager::ExceptionManager()
@@ -36,7 +37,7 @@ bool ExceptionManager::isMatch(int value, int excp, const QString& context)
         {
             QString info("Caught exception \'" + descriptions[excp] +
                          "\' while in " + context);
-            qDebug(info.toLatin1().constData());
+            qDebug() << info;
         }
     return match;
 }

@@ -111,7 +111,6 @@ bool Cache::save(const QString& gitDir, const RevFileMap& rf,
 bool Cache::load(const QString& gitDir, RevFileMap& rfm,
                  StrVect& dirs, StrVect& files, QByteArray& revsFilesShaBuf)
 {
-
     // check for cache file
     QString path(gitDir + C_DAT_FILE);
     QFile f(path);
@@ -152,7 +151,6 @@ bool Cache::load(const QString& gitDir, RevFileMap& rfm,
 
     while (!stream.atEnd())
         {
-
             RevFile* rf = new RevFile();
             *rf << stream;
 
@@ -176,7 +174,6 @@ bool Cache::load(const QString& gitDir, RevFileMap& rfm,
  */
 const RevFile& RevFile::operator>>(QDataStream& stream) const
 {
-
     stream << pathsIdx;
 
     // skip common case of only modified files
@@ -202,7 +199,6 @@ const RevFile& RevFile::operator>>(QDataStream& stream) const
 
 RevFile& RevFile::operator<<(QDataStream& stream)
 {
-
     stream >> pathsIdx;
 
     bool isEmpty;

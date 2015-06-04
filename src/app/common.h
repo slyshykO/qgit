@@ -48,7 +48,6 @@ inline const QString  _valueOf(size_t x) { return QString::number((uint)x); }
 #define FOREACH(type, i, c) for (type::const_iterator i((c).constBegin()),    \
                                  _e##i##_((c).constEnd()); i != _e##i##_; ++i)
 
-//#define FOREACH_SL(i, c)    FOREACH(QStringList, i, c)
 
 class QDataStream;
 class QProcess;
@@ -444,12 +443,12 @@ typedef QHash<ShaString, const RevFile*> RevFileMap;
 class FileAnnotation
 {
 public:
-	explicit FileAnnotation(int id) : isValid(false), annId(id) {}
-	FileAnnotation() : isValid(false) {}
-	QStringList lines;
-	bool isValid;
-	int annId;
-	QString fileSha;
+    explicit FileAnnotation(int id) : isValid(false), annId(id) {}
+    FileAnnotation() : isValid(false) {}
+    QStringList lines;
+    bool isValid;
+    int annId;
+    QString fileSha;
 };
 typedef QHash<ShaString, FileAnnotation> AnnotateHistory;
 
@@ -457,10 +456,10 @@ typedef QHash<ShaString, FileAnnotation> AnnotateHistory;
 class BaseEvent: public QEvent
 {
 public:
-	BaseEvent(SCRef d, int id) : QEvent((QEvent::Type)id), payLoad(d) {}
-	const QString myData() const { return payLoad; }
+    BaseEvent(SCRef d, int id) : QEvent((QEvent::Type)id), payLoad(d) {}
+    const QString myData() const { return payLoad; }
 private:
-	const QString payLoad; // passed by copy
+    const QString payLoad; // passed by copy
 };
 
 #define DEF_EVENT(X, T) class X : public BaseEvent { public:        \
@@ -472,17 +471,17 @@ DEF_EVENT(AnnotateProgressEvent, QGit::ANN_PRG_EV);
 class DeferredPopupEvent : public BaseEvent
 {
 public:
-	DeferredPopupEvent(SCRef msg, int type) : BaseEvent(msg, type) {}
+    DeferredPopupEvent(SCRef msg, int type) : BaseEvent(msg, type) {}
 };
 
 class MainExecErrorEvent : public BaseEvent
 {
 public:
-	MainExecErrorEvent(SCRef c, SCRef e) : BaseEvent("", QGit::ERROR_EV), cmd(c), err(e) {}
-	const QString command() const { return cmd; }
-	const QString report() const { return err; }
+    MainExecErrorEvent(SCRef c, SCRef e) : BaseEvent("", QGit::ERROR_EV), cmd(c), err(e) {}
+    const QString command() const { return cmd; }
+    const QString report() const { return err; }
 private:
-	const QString cmd, err;
+    const QString cmd, err;
 };
 
 #endif

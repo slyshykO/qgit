@@ -169,7 +169,7 @@ private:
     bool dragging;
     bool dropping;
     bool linked;
-    int popupType;
+    int  popupType;
     QString popupData;
     QString statusBarRequest;
 };

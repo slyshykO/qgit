@@ -36,11 +36,21 @@ QtGuiApplication{
         prefix:"src/gui/"
         files:["*.h","*.hpp","*.cpp", "*.ui"]
     }
+    Group{
+        name:"git"
+        prefix:"src/git/"
+        files:["*.h","*.hpp","*.cpp", "*.ui"]
+    }
+    Group{
+        name:"app"
+        prefix:"src/app/"
+        files:["*.h","*.hpp","*.cpp", "*.ui"]
+    }
 
     cpp.commonCompilerFlags: {
         var flags = base;
         if(cpp.compilerName.contains("g++"))
-            flags = flags.concat(["-fdata-sections","-ffunction-sections","-flto"])
+            flags = flags.concat(["-fdata-sections","-ffunction-sections"])
         if(cpp.compilerName.contains("g++") && (qbs.buildVariant == "release"))
             flags = flags.concat(["-flto"])
         return flags
@@ -48,7 +58,7 @@ QtGuiApplication{
     cpp.cxxFlags:{
         var flags = base
         if(cpp.compilerName.contains("g++"))
-            flags = flags.concat(["-std=gnu++11","-flto"])
+            flags = flags.concat(["-std=gnu++11"])
         return flags
     }
     cpp.linkerFlags:{
@@ -62,7 +72,7 @@ QtGuiApplication{
     }
 
     cpp.includePaths:{
-        var inc_paths = base.concat(["src","src/gui"])
+        var inc_paths = base.concat(["src","src/gui","src/git","src/app"])
         return inc_paths
     }
 }
