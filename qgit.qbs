@@ -47,6 +47,10 @@ QtGuiApplication{
         files:["*.h","*.hpp","*.cpp", "*.ui"]
     }
 
+    cpp.minimumWindowsVersion:"6.1"
+    cpp.enableExceptions:true
+    cpp.cxxLanguageVersion:"c++14"
+
     cpp.commonCompilerFlags: {
         var flags = base;
         if(cpp.compilerName.contains("g++"))
@@ -57,8 +61,6 @@ QtGuiApplication{
     }
     cpp.cxxFlags:{
         var flags = base
-        if(cpp.compilerName.contains("g++"))
-            flags = flags.concat(["-std=gnu++11"])
         return flags
     }
     cpp.linkerFlags:{
