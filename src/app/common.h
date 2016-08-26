@@ -27,7 +27,7 @@
 template<typename T> inline const QString _valueOf(const T& x) { return QVariant(x).toString(); }
 template<> inline const QString _valueOf(const QStringList& x) { return x.join(" "); }
 inline const QString& _valueOf(const QString& x) { return x; }
-inline const QString  _valueOf(size_t x) { return QString::number((uint)x); }
+inline const QString  _valueOf(size_t x) { return QString::number(static_cast<uint>(x)); }
 
 // some debug macros
 #define dbg(x)    qDebug(#x " is <%s>", _valueOf(x).toLatin1().constData())
@@ -319,7 +319,7 @@ class Rev
     Rev& operator=(const Rev&);
 public:
     Rev(const QByteArray& b, uint s, int idx, int* next, bool withDiff)
-        : orderIdx(idx), ba(b), start(s)
+        : orderIdx(idx), ba(b), start(static_cast<int>(s))
     {
 
         indexed = isDiffCache = isApplied = isUnApplied = false;
@@ -327,7 +327,7 @@ public:
         *next = indexData(true, withDiff);
     }
     bool isBoundary() const { return (ba.at(shaStart - 1) == '-'); }
-    uint parentsCount() const { return parentsCnt; }
+    uint parentsCount() const { return static_cast<uint>(parentsCnt); }
     const ShaString parent(int idx) const;
     const QStringList parents() const;
     const ShaString sha() const { return ShaString(ba.constData() + shaStart); }
@@ -456,7 +456,8 @@ typedef QHash<ShaString, FileAnnotation> AnnotateHistory;
 class BaseEvent: public QEvent
 {
 public:
-    BaseEvent(SCRef d, int id) : QEvent((QEvent::Type)id), payLoad(d) {}
+    BaseEvent(SCRef d, int id);
+    ~BaseEvent();
     const QString myData() const { return payLoad; }
 private:
     const QString payLoad; // passed by copy
@@ -472,12 +473,14 @@ class DeferredPopupEvent : public BaseEvent
 {
 public:
     DeferredPopupEvent(SCRef msg, int type) : BaseEvent(msg, type) {}
+    ~DeferredPopupEvent();
 };
 
 class MainExecErrorEvent : public BaseEvent
 {
 public:
     MainExecErrorEvent(SCRef c, SCRef e) : BaseEvent("", QGit::ERROR_EV), cmd(c), err(e) {}
+    ~MainExecErrorEvent();
     const QString command() const { return cmd; }
     const QString report() const { return err; }
 private:

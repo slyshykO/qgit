@@ -29,18 +29,19 @@ static bool startup = true; // it's OK to be unique among qgit windows
 
 static QHash<QString, QString> localDates;
 
-const QString Git::getLocalDate(SCRef gitDate) {
-// fast path here, we use a cache to avoid the slow date calculation
+const QString Git::getLocalDate(SCRef gitDate)
+{
+    // fast path here, we use a cache to avoid the slow date calculation
 
-	QString localDate(localDates.value(gitDate));
-	if (!localDate.isEmpty())
-		return localDate;
+    QString localDate(localDates.value(gitDate));
+    if (!localDate.isEmpty())
+        return localDate;
 
-	QDateTime d;
-	d.setTime_t(gitDate.toULong());
-	localDate = d.toString(Qt::LocalDate);
-	localDates[gitDate] = localDate;
-	return localDate;
+    QDateTime d;
+    d.setTime_t(gitDate.toULong());
+    localDate = d.toString(Qt::LocalDate);
+    localDates[gitDate] = localDate;
+    return localDate;
 }
 
 const QStringList Git::getArgs(bool* quit, bool repoChanged)
@@ -72,7 +73,7 @@ const QStringList Git::getArgs(bool* quit, bool repoChanged)
 
 const QString Git::getBaseDir(bool* changed, SCRef wd, bool* ok, QString* gd)
 {
-// we could run from a subdirectory, so we need to get correct directories
+    // we could run from a subdirectory, so we need to get correct directories
 
     QString runOutput, tmp(workDir);
     workDir = wd;
@@ -100,14 +101,15 @@ const QString Git::getBaseDir(bool* changed, SCRef wd, bool* ok, QString* gd)
     return d.absolutePath();
 }
 
-Reference* Git::lookupReference(const ShaString& sha, bool create) {
-/* Note: if create flag is set then sha MUST point to persistent data */
+Reference* Git::lookupReference(const ShaString& sha, bool create)
+{
+    /* Note: if create flag is set then sha MUST point to persistent data */
 
-	RefMap::iterator it(refsShaMap.find(sha));
-	if (it == refsShaMap.end() && create)
-		it = refsShaMap.insert(sha, Reference());
+    RefMap::iterator it(refsShaMap.find(sha));
+    if (it == refsShaMap.end() && create)
+        it = refsShaMap.insert(sha, Reference());
 
-	return (it != refsShaMap.end() ? &(*it) : NULL);
+    return (it != refsShaMap.end() ? &(*it) : NULL);
 }
 
 bool Git::getRefs() {

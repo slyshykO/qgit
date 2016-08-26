@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>CustomActionBase</class>
- <widget class="QWidget" name="CustomActionBase" >
-  <property name="geometry" >
+ <widget class="QWidget" name="CustomActionBase">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,156 +10,162 @@
     <height>492</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Actions builder</string>
   </property>
-  <property name="windowIcon" >
-   <iconset resource="icons.qrc" >:/icons/resources/bookmark.png</iconset>
+  <property name="windowIcon">
+   <iconset resource="../icons.qrc">
+    <normaloff>:/icons/resources/bookmark.png</normaloff>:/icons/resources/bookmark.png</iconset>
   </property>
-  <layout class="QHBoxLayout" >
-   <property name="spacing" >
+  <layout class="QHBoxLayout">
+   <property name="spacing">
     <number>0</number>
    </property>
-   <property name="leftMargin" >
+   <property name="leftMargin">
     <number>5</number>
    </property>
-   <property name="topMargin" >
+   <property name="topMargin">
     <number>5</number>
    </property>
-   <property name="rightMargin" >
+   <property name="rightMargin">
     <number>5</number>
    </property>
-   <property name="bottomMargin" >
+   <property name="bottomMargin">
     <number>5</number>
    </property>
    <item>
-    <layout class="QVBoxLayout" >
-     <property name="spacing" >
+    <layout class="QVBoxLayout">
+     <property name="spacing">
       <number>6</number>
      </property>
-     <property name="leftMargin" >
+     <property name="leftMargin">
       <number>0</number>
      </property>
-     <property name="topMargin" >
+     <property name="topMargin">
       <number>0</number>
      </property>
-     <property name="rightMargin" >
+     <property name="rightMargin">
       <number>0</number>
      </property>
-     <property name="bottomMargin" >
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
-      <widget class="QFrame" name="frame" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+      <widget class="QFrame" name="frame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="frameShape" >
+       <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
-       <property name="frameShadow" >
+       <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <layout class="QHBoxLayout" >
-        <property name="spacing" >
+       <layout class="QHBoxLayout">
+        <property name="spacing">
          <number>6</number>
         </property>
-        <property name="leftMargin" >
+        <property name="leftMargin">
          <number>9</number>
         </property>
-        <property name="topMargin" >
+        <property name="topMargin">
          <number>9</number>
         </property>
-        <property name="rightMargin" >
+        <property name="rightMargin">
          <number>9</number>
         </property>
-        <property name="bottomMargin" >
+        <property name="bottomMargin">
          <number>9</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" >
-          <property name="spacing" >
+         <layout class="QHBoxLayout">
+          <property name="spacing">
            <number>15</number>
           </property>
-          <property name="leftMargin" >
+          <property name="leftMargin">
            <number>0</number>
           </property>
-          <property name="topMargin" >
+          <property name="topMargin">
            <number>0</number>
           </property>
-          <property name="rightMargin" >
+          <property name="rightMargin">
            <number>0</number>
           </property>
-          <property name="bottomMargin" >
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="pushButtonNew" >
-            <property name="text" >
+           <widget class="QPushButton" name="pushButtonNew">
+            <property name="text">
              <string>&amp;New</string>
             </property>
-            <property name="icon" >
-             <iconset resource="icons.qrc" >:/icons/resources/bookmark_add.png</iconset>
+            <property name="icon">
+             <iconset resource="../icons.qrc">
+              <normaloff>:/icons/resources/bookmark_add.png</normaloff>:/icons/resources/bookmark_add.png</iconset>
             </property>
-            <property name="shortcut" >
+            <property name="shortcut">
              <string>Alt+N</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButtonRename" >
-            <property name="text" >
+           <widget class="QPushButton" name="pushButtonRename">
+            <property name="text">
              <string>&amp;Rename</string>
             </property>
-            <property name="icon" >
-             <iconset resource="icons.qrc" >:/icons/resources/pencil.png</iconset>
+            <property name="icon">
+             <iconset resource="../icons.qrc">
+              <normaloff>:/icons/resources/pencil.png</normaloff>:/icons/resources/pencil.png</iconset>
             </property>
-            <property name="shortcut" >
+            <property name="shortcut">
              <string>Alt+R</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButtonRemove" >
-            <property name="text" >
+           <widget class="QPushButton" name="pushButtonRemove">
+            <property name="text">
              <string>R&amp;emove</string>
             </property>
-            <property name="icon" >
-             <iconset resource="icons.qrc" >:/icons/resources/remove.png</iconset>
+            <property name="icon">
+             <iconset resource="../icons.qrc">
+              <normaloff>:/icons/resources/remove.png</normaloff>:/icons/resources/remove.png</iconset>
             </property>
-            <property name="shortcut" >
+            <property name="shortcut">
              <string>Alt+E</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButtonMoveUp" >
-            <property name="layoutDirection" >
+           <widget class="QPushButton" name="pushButtonMoveUp">
+            <property name="layoutDirection">
              <enum>Qt::LeftToRight</enum>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>Move &amp;up</string>
             </property>
-            <property name="icon" >
-             <iconset resource="icons.qrc" >:/icons/resources/1uparrow.png</iconset>
+            <property name="icon">
+             <iconset resource="../icons.qrc">
+              <normaloff>:/icons/resources/1uparrow.png</normaloff>:/icons/resources/1uparrow.png</iconset>
             </property>
-            <property name="shortcut" >
+            <property name="shortcut">
              <string>Alt+U</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButtonMoveDown" >
-            <property name="text" >
+           <widget class="QPushButton" name="pushButtonMoveDown">
+            <property name="text">
              <string>Move &amp;down</string>
             </property>
-            <property name="icon" >
-             <iconset resource="icons.qrc" >:/icons/resources/1downarrow.png</iconset>
+            <property name="icon">
+             <iconset resource="../icons.qrc">
+              <normaloff>:/icons/resources/1downarrow.png</normaloff>:/icons/resources/1downarrow.png</iconset>
             </property>
-            <property name="shortcut" >
+            <property name="shortcut">
              <string>Alt+D</string>
             </property>
            </widget>
@@ -169,169 +176,169 @@
       </widget>
      </item>
      <item>
-      <widget class="QSplitter" name="splitter" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+      <widget class="QSplitter" name="splitter">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <widget class="QFrame" name="frame_3" >
-        <property name="frameShape" >
+       <widget class="QFrame" name="frame_3">
+        <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
-        <property name="frameShadow" >
+        <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" >
-         <property name="spacing" >
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>6</number>
          </property>
-         <property name="leftMargin" >
+         <property name="leftMargin">
           <number>9</number>
          </property>
-         <property name="topMargin" >
+         <property name="topMargin">
           <number>9</number>
          </property>
-         <property name="rightMargin" >
+         <property name="rightMargin">
           <number>9</number>
          </property>
-         <property name="bottomMargin" >
+         <property name="bottomMargin">
           <number>9</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" >
-           <property name="spacing" >
+          <layout class="QVBoxLayout">
+           <property name="spacing">
             <number>6</number>
            </property>
-           <property name="leftMargin" >
+           <property name="leftMargin">
             <number>0</number>
            </property>
-           <property name="topMargin" >
+           <property name="topMargin">
             <number>0</number>
            </property>
-           <property name="rightMargin" >
+           <property name="rightMargin">
             <number>0</number>
            </property>
-           <property name="bottomMargin" >
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
-            <widget class="QLabel" name="labelActionName" >
-             <property name="text" >
+            <widget class="QLabel" name="labelActionName">
+             <property name="text">
               <string>Name</string>
              </property>
-             <property name="buddy" >
+             <property name="buddy">
               <cstring>listWidgetNames</cstring>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QListWidget" name="listWidgetNames" />
+            <widget class="QListWidget" name="listWidgetNames"/>
            </item>
           </layout>
          </item>
         </layout>
        </widget>
-       <widget class="QFrame" name="frame_2" >
-        <property name="frameShape" >
+       <widget class="QFrame" name="frame_2">
+        <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
-        <property name="frameShadow" >
+        <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" >
-         <property name="spacing" >
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>6</number>
          </property>
-         <property name="leftMargin" >
+         <property name="leftMargin">
           <number>9</number>
          </property>
-         <property name="topMargin" >
+         <property name="topMargin">
           <number>9</number>
          </property>
-         <property name="rightMargin" >
+         <property name="rightMargin">
           <number>9</number>
          </property>
-         <property name="bottomMargin" >
+         <property name="bottomMargin">
           <number>9</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" >
-           <property name="spacing" >
+          <layout class="QVBoxLayout">
+           <property name="spacing">
             <number>6</number>
            </property>
-           <property name="leftMargin" >
+           <property name="leftMargin">
             <number>0</number>
            </property>
-           <property name="topMargin" >
+           <property name="topMargin">
             <number>0</number>
            </property>
-           <property name="rightMargin" >
+           <property name="rightMargin">
             <number>0</number>
            </property>
-           <property name="bottomMargin" >
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
-            <widget class="QLabel" name="textLabel1" >
-             <property name="text" >
+            <widget class="QLabel" name="textLabel1">
+             <property name="text">
               <string>Insert commands to run:</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QTextEdit" name="textEditAction" >
-             <property name="toolTip" >
+            <widget class="QTextEdit" name="textEditAction">
+             <property name="toolTip">
               <string>Insert commands to run. See handbook (F1) for some examples.</string>
              </property>
-             <property name="acceptRichText" >
+             <property name="acceptRichText">
               <bool>false</bool>
              </property>
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" >
-             <property name="spacing" >
+            <layout class="QHBoxLayout">
+             <property name="spacing">
               <number>6</number>
              </property>
-             <property name="leftMargin" >
+             <property name="leftMargin">
               <number>0</number>
              </property>
-             <property name="topMargin" >
+             <property name="topMargin">
               <number>0</number>
              </property>
-             <property name="rightMargin" >
+             <property name="rightMargin">
               <number>0</number>
              </property>
-             <property name="bottomMargin" >
+             <property name="bottomMargin">
               <number>0</number>
              </property>
              <item>
-              <widget class="QCheckBox" name="checkBoxRefreshAfterAction" >
-               <property name="toolTip" >
+              <widget class="QCheckBox" name="checkBoxRefreshAfterAction">
+               <property name="toolTip">
                 <string>If checked main view will be automatically refreshed when done</string>
                </property>
-               <property name="text" >
+               <property name="text">
                 <string>Refresh &amp;view at the end</string>
                </property>
-               <property name="shortcut" >
+               <property name="shortcut">
                 <string>Alt+V</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBoxAskArgs" >
-               <property name="toolTip" >
+              <widget class="QCheckBox" name="checkBoxAskArgs">
+               <property name="toolTip">
                 <string>Check if you want to be prompted for command line arguments. Args will be appended after the first command only.</string>
                </property>
-               <property name="text" >
+               <property name="text">
                 <string>A&amp;sk for command line arguments</string>
                </property>
-               <property name="shortcut" >
+               <property name="shortcut">
                 <string>Alt+S</string>
                </property>
               </widget>
@@ -345,31 +352,31 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" >
-       <property name="spacing" >
+      <layout class="QHBoxLayout">
+       <property name="spacing">
         <number>6</number>
        </property>
-       <property name="leftMargin" >
+       <property name="leftMargin">
         <number>0</number>
        </property>
-       <property name="topMargin" >
+       <property name="topMargin">
         <number>0</number>
        </property>
-       <property name="rightMargin" >
+       <property name="rightMargin">
         <number>0</number>
        </property>
-       <property name="bottomMargin" >
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>101</width>
            <height>20</height>
@@ -378,17 +385,17 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButtonOk" >
-         <property name="text" >
+        <widget class="QPushButton" name="pushButtonOk">
+         <property name="text">
           <string>&amp;Ok</string>
          </property>
-         <property name="shortcut" >
+         <property name="shortcut">
           <string>Alt+O</string>
          </property>
-         <property name="autoDefault" >
+         <property name="autoDefault">
           <bool>true</bool>
          </property>
-         <property name="default" >
+         <property name="default">
           <bool>true</bool>
          </property>
         </widget>
@@ -399,9 +406,9 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="icons.qrc" />
+  <include location="../icons.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -410,11 +417,11 @@
    <receiver>CustomActionBase</receiver>
    <slot>pushButtonNew_clicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -426,11 +433,11 @@
    <receiver>CustomActionBase</receiver>
    <slot>pushButtonRename_clicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -442,11 +449,11 @@
    <receiver>CustomActionBase</receiver>
    <slot>pushButtonRemove_clicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -458,11 +465,11 @@
    <receiver>CustomActionBase</receiver>
    <slot>checkBoxRefreshAfterAction_toggled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -474,11 +481,11 @@
    <receiver>CustomActionBase</receiver>
    <slot>pushButtonMoveUp_clicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -490,11 +497,11 @@
    <receiver>CustomActionBase</receiver>
    <slot>pushButtonMoveDown_clicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -506,11 +513,11 @@
    <receiver>CustomActionBase</receiver>
    <slot>checkBoxAskArgs_toggled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -522,11 +529,11 @@
    <receiver>CustomActionBase</receiver>
    <slot>pushButtonOk_clicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>20</x>
      <y>20</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
     </hint>
@@ -538,11 +545,11 @@
    <receiver>CustomActionBase</receiver>
    <slot>textEditAction_textChanged()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>395</x>
      <y>239</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>330</x>
      <y>231</y>
     </hint>
@@ -554,11 +561,11 @@
    <receiver>CustomActionBase</receiver>
    <slot>listWidgetNames_currentItemChanged(QListWidgetItem*,QListWidgetItem*)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>129</x>
      <y>256</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>337</x>
      <y>232</y>
     </hint>

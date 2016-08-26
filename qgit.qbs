@@ -27,11 +27,6 @@ QtGuiApplication{
         files:["*.txt","src/*.txt"]
     }
     Group{
-        name:"src"
-        prefix:"src/"
-        files:["*.h","*.hpp","*.cpp", "*.ui"]
-    }
-    Group{
         name:"gui"
         prefix:"src/gui/"
         files:["*.h","*.hpp","*.cpp", "*.ui"]
