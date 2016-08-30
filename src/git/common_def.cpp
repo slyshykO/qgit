@@ -309,6 +309,7 @@ void QGit::initMimePix()
 void QGit::freeMimePix()
 {
     qDeleteAll(mimePixMap);
+    mimePixMap.clear();
 }
 
 const QPixmap* QGit::mimePix(SCRef fileName)

@@ -8,10 +8,6 @@
 #include "common.h"
 #include "mainimpl.h"
 
-#if defined(_MSC_VER) && defined(NDEBUG)
-	#pragma comment(linker,"/entry:mainCRTStartup")
-	#pragma comment(linker,"/subsystem:windows")
-#endif
 
 using namespace QGit;
 
